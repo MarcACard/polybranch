@@ -1,30 +1,21 @@
-export const LLMProviders = ["openai", "anthropic", "google", "xai", "custom"] as const
-export type LLMProvider = typeof LLMProviders[number]
+// Provider Definitions
+export const LLMProviders = ["openai", "anthropic", "google", "xai"] as const;
+export type LLMProvider = (typeof LLMProviders)[number];
 
-export interface ApiKeyConfig {
-    id: string
-    name: string
-    key: string
-    provider: LLMProvider
-    createdAt: number
+// API Key Management
+export interface ProviderApiKey {
+  provider: LLMProvider;
+  key: string;
+  lastUpdated: number;
 }
 
-export interface ModelConfig {
-    id: string
-    name: string
-    modelName: string
-    provider: LLMProvider
-    apiKeyId: string
-    endpoint?: string
-    isHosted: boolean
-    namespace?: string
-    createdAt: number
+// Model Definitions
+export interface ProviderModel {
+  id: string;
+  name: string;
+  modelName: string;
+  provider: LLMProvider;
+  maxTokens?: number;
+  description?: string;
 }
 
-export interface HostedModel {
-    name: string
-    modelName: string
-    provider: LLMProvider
-    maxTokens?: number
-    description?: string
-}

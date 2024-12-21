@@ -22,7 +22,7 @@ export const SheetItem = React.forwardRef<
           {...props}
           ref={ref}
           onSelect={(event) => {
-            // event.preventDefault();
+            event.preventDefault();
           }}
         >
           {triggerChildren}

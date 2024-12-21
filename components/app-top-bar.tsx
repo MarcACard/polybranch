@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { SiGithub, SiX, IconType } from "@icons-pack/react-simple-icons";
 import { Menu, KeyRound, MessageSquare, Scroll } from "lucide-react";
 
-import { ApiKeyForm } from "@/components/api-key-form";
+import { ProviderKeyManager} from "@/components/api-key-manager";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -60,15 +60,19 @@ export function AppTopBar() {
               }
             >
               <SheetHeader>
-                <SheetTitle>API Keys</SheetTitle>
+                <SheetTitle>
+                  <div className="flex items-center gap-2">
+                    <KeyRound />
+                    <span>API Key Storage</span>
+                  </div>
+                </SheetTitle>
                 <SheetDescription>
-                  Manager your API Keys for supported and custom providers. All
-                  keys & customer configuration will be stored locally within
-                  your browser client.
+                  Manage your API Keys for supported providers. All keys will
+                  be stored locally within your browser client.
                 </SheetDescription>
               </SheetHeader>
               <div className="mt-6">
-                <ApiKeyForm />
+                <ProviderKeyManager />
               </div>
             </SheetItem>
 
@@ -97,11 +101,10 @@ export function AppTopBar() {
               <DialogHeader>Release Notes</DialogHeader>
               <DialogDescription>Feedback Yo, ho ho ho</DialogDescription>
             </DialogItem>
-            
 
             <DropdownMenuSeparator />
 
-            <ExternalLinkMenuItem icon={SiGithub} href="https://github.com/">
+            <ExternalLinkMenuItem icon={SiGithub} href="https://github.com/MarcACard/polybranch">
               Github
             </ExternalLinkMenuItem>
 
