@@ -2,7 +2,6 @@ import { LLMProvider, ProviderModel } from "@/types/llm";
 import {
   SiOpenai,
   SiGoogle,
-  SiX,
   SiAnthropic,
   IconType,
 } from "@icons-pack/react-simple-icons";

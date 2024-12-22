@@ -25,3 +25,5 @@ export const SiXai = React.forwardRef<SVGSVGElement, CustomIconProps>(
     );
   }
 ) as IconType;
+
+SiXai.displayName = 'SiXai';
