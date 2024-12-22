@@ -6,6 +6,7 @@ import {
   SiAnthropic,
   IconType,
 } from "@icons-pack/react-simple-icons";
+import { SiXai } from "@/components/custom-icons";
 
 interface ProviderInfo {
   displayName: string;
@@ -36,7 +37,7 @@ export const PROVIDERS: Record<LLMProvider, ProviderInfo> = {
   xai: {
     displayName: "xAI",
     description: "",
-    icon: SiX,
+    icon: SiXai,
     docsUrl: "",
   },
 };

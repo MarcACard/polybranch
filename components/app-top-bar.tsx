@@ -42,11 +42,11 @@ const ExternalLinkMenuItem = ({
 export function AppTopBar() {
   return (
     <div className="fixed top-0 left-0 right-0 p-4 pointer-events-none z-50">
-      <div className="pointer-events-auto inline-block">
+      <div className="pointer-events-auto inline-block drop-shadow-md">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="default" size="icon">
-              <Menu className="h-5 w-5" />
+            <Button variant="default" size="icon" className="">
+              <Menu />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="min-w-48">
