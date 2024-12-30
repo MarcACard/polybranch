@@ -44,6 +44,8 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 import { LLMParameter } from "@/types/llm-parameters";
+import { useMessageFlow } from "@/hooks/use-message-flow";
+import { logger } from "@/lib/logger";
 
 interface SliderSelectorProps {
   id: string;
@@ -133,7 +135,7 @@ function AdvancedModelConfiguration() {
                     ? DEFAULT_PARAMETERS[parameter]
                     : 0;
                   return (
-                    <div className="col-span-3">
+                    <div className="col-span-3" key={parameter}>
                       <SliderSelectors
                         key={parameter}
                         id={parameter}
@@ -156,11 +158,18 @@ function AdvancedModelConfiguration() {
   );
 }
 
-function ProviderModelComboBox() {
+interface ProviderModelComboBoxProps {
+  value: string;
+  onChange: (value: string) => void;
+}
+
+function ProviderModelComboBox({
+  value,
+  onChange,
+}: ProviderModelComboBoxProps) {
   const { getModelsForProvider } = useProviderModels();
   const { hasProviderKey } = useProviderKeys();
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
 
   const activeProviders = (Object.keys(PROVIDERS) as LLMProvider[]).filter(
     (provider) => hasProviderKey(provider)
@@ -213,7 +222,7 @@ function ProviderModelComboBox() {
                         key={model.modelName}
                         value={model.modelName}
                         onSelect={(currentValue) => {
-                          setValue(currentValue === value ? "" : currentValue);
+                          onChange(currentValue === value ? "" : currentValue);
                           setOpen(false);
                         }}
                       >
@@ -252,14 +261,22 @@ function ProviderModelComboBox() {
 export function MessageInput() {
   const [message, setMessage] = React.useState("");
   const [isVisible, setIsVisible] = React.useState(true);
+  const [selectedModel, setSelectedModel] = React.useState("");
+  const { canSendMessage, sendMessage } = useMessageFlow();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim()) return;
-    console.log("Message Submitted:", message);
+    if (!message.trim() || !selectedModel) return;
 
-    setMessage("");
+    try {
+      await sendMessage(message, selectedModel, {});
+      setMessage("");
+    } catch (error) {
+      logger.error("Error sending message", error);
+    }
   };
+
+  logger.debug("MessageINput - canSendMessage:", canSendMessage);
 
   return (
     <div
@@ -290,9 +307,12 @@ export function MessageInput() {
       >
         {/* Primary Config Top */}
         <form onSubmit={handleSubmit}>
-          <div className="px-3 py-3 border-b border-border/50 flex items-center justify-between gap-2">
+          <div className="px-3 py-3 border-b border-fborder/50 flex items-center justify-between gap-2">
             <div className="flex gap-2 items-center">
-              <ProviderModelComboBox />
+              <ProviderModelComboBox
+                value={selectedModel}
+                onChange={setSelectedModel}
+              />
               <AdvancedModelConfiguration />
             </div>
             <div>
@@ -301,7 +321,8 @@ export function MessageInput() {
                 variant="default"
                 size="icon"
                 className="rounded-full"
-                disabled={!message.trim()}
+                disabled={!canSendMessage}
+                data-can-send={canSendMessage}
               >
                 <MoveUp />
               </Button>

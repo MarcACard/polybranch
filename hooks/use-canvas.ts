@@ -1,29 +1,45 @@
+// hooks/use-canvas.ts
 import { useCallback, useEffect, useState } from "react";
-import { Edge, Node, useReactFlow } from "@xyflow/react";
+import {
+  Edge,
+  Node,
+  NodeChange,
+  EdgeChange,
+  applyNodeChanges,
+  applyEdgeChanges,
+} from "@xyflow/react";
 import { MessageNodeData } from "@/types/nodes";
 import { StorageKeys, storage } from "@/lib/storage";
 
 export const useCanvas = () => {
-  const { setNodes, setEdges, getNodes, getEdges, addNodes, addEdges } =
-    useReactFlow();
+  const [nodes, setNodes] = useState<Node<MessageNodeData>[]>([]);
+  const [edges, setEdges] = useState<Edge[]>([]);
+  const [initialized, setInitialized] = useState(false);
+  const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
+  // Load from storage on mount
   useEffect(() => {
     const storedNodes = storage.get<Node<MessageNodeData>[]>(
       StorageKeys.CANVAS_NODES
     );
     const storedEdges = storage.get<Edge[]>(StorageKeys.CANVAS_EDGES);
 
+    console.log("Loading from storage - nodes:", storedNodes);
+    console.log("Loading from storage - edges:", storedEdges);
+
     if (storedNodes) setNodes(storedNodes);
     if (storedEdges) setEdges(storedEdges);
-  }, [setNodes, setEdges]);
+    setInitialized(true);
+  }, []);
 
-  const saveCanvas = useCallback(() => {
-    const currentNodes = getNodes();
-    const currentEdges = getEdges();
+  // Save to storage when state changes
+  useEffect(() => {
+    if (!initialized) return;
 
-    storage.set(StorageKeys.CANVAS_NODES, currentNodes);
-    storage.set(StorageKeys.CANVAS_EDGES, currentEdges);
-  }, [getNodes, getEdges]);
+    console.log("Saving to storage - nodes:", nodes);
+    storage.set(StorageKeys.CANVAS_NODES, nodes);
+    storage.set(StorageKeys.CANVAS_EDGES, edges);
+  }, [nodes, edges, initialized]);
 
   const addMessageNode = useCallback(
     (
@@ -38,41 +54,47 @@ export const useCanvas = () => {
         data: { message },
       };
 
-      addNodes(newNode);
+      setNodes((nds) => [...nds, newNode]);
 
       if (parentId) {
         const newEdge: Edge = {
-          id: `e${parentId}=${message.id}`,
+          id: `e${parentId}-${message.id}`,
           source: parentId,
           target: message.id,
         };
-        addEdges(newEdge);
+        setEdges((eds) => [...eds, newEdge]);
       }
-
-      saveCanvas();
     },
-    [addNodes, addEdges, saveCanvas]
+    []
   );
 
-  const calculateNewNodePosition = useCallback(
-    (parentId: string | null) => {
-      if (!parentId) {
-        return { x: 100, y: 100 };
-      }
+  const onNodesChange = useCallback((changes: NodeChange[]) => {
+    setNodes(
+      (nds: Node<MessageNodeData>[]) =>
+        applyNodeChanges(changes, nds) as Node<MessageNodeData>[]
+    );
+  }, []);
 
-      const parentNode = getNodes().find((node) => node.id === parentId);
-      if (!parentNode) {
-        return { x: 100, y: 100 };
-      }
+  const onEdgesChange = useCallback((changes: EdgeChange[]) => {
+    setEdges((eds) => applyEdgeChanges(changes, eds));
+  }, []);
 
-      return { x: parentNode.position.x, y: parentNode.position.y + 300 };
+  const onSelectionChange = useCallback(
+    ({ nodes: selectedNodes }: { nodes: Node[] }) => {
+      const selected = selectedNodes[0]?.id || null;
+      setSelectedNode(selected);
+      console.log("Selected node:", selected);
     },
-    [getNodes]
+    []
   );
 
   return {
+    nodes,
+    edges,
     addMessageNode,
-    calculateNewNodePosition,
-    saveCanvas,
+    onNodesChange,
+    onEdgesChange,
+    selectedNode,
+    onSelectionChange,
   };
 };
