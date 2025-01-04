@@ -12,6 +12,22 @@ interface MessageNodeProps extends NodeProps {
   data: MessageNodeData;
 }
 
+function formatTime(value: number, type: "unix" | "dateString") {
+  let valueToFormat = value;
+
+  if (type === "unix") {
+    valueToFormat *= 1000;
+  }
+
+  return new Date(valueToFormat).toLocaleTimeString("en-US", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 export function MessageNode({ data, selected }: MessageNodeProps) {
   const { message } = data;
   const isUser = message.role === "user";
@@ -20,21 +36,14 @@ export function MessageNode({ data, selected }: MessageNodeProps) {
     !isUser && message.provider ? PROVIDERS[message.provider] : null;
   const ProviderIcon = providerInfo?.icon;
 
-  const formattedTime = new Date(message.timestamp).toLocaleTimeString(
-    "en-US",
-    {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    }
-  );
+  const formattedTime = isUser
+    ? formatTime(message.timestamp, "dateString")
+    : formatTime(message.timestamp, "unix");
 
   return (
     <div
       className={cn(
-        "group relative rounded-lg border min-w-[200px] max-w-[400px] bg-background hover:drop-shadow transition-shadow",
+        "group relative rounded-lg border w-[720px] bg-background hover:drop-shadow transition-shadow",
         selected && "ring-1 ring-primary"
       )}
     >
@@ -75,7 +84,7 @@ export function MessageNode({ data, selected }: MessageNodeProps) {
         <div className="flex justify-between text-xs text-muted-foregorund">
           <div>
             <span className="font-semibold">Tokens: </span>
-            {message.metadata?.promptTokens}
+            {message.metadata?.tokenCount}
           </div>
           <div>{formattedTime}</div>
         </div>
