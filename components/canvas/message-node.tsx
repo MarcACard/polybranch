@@ -43,8 +43,8 @@ export function MessageNode({ data, selected }: MessageNodeProps) {
   return (
     <div
       className={cn(
-        "group relative rounded-lg border w-[720px] bg-background hover:drop-shadow transition-shadow",
-        selected && "ring-1 ring-primary"
+        "group relative rounded-lg border w-[720px] bg-background drop-shadow hover:drop-shadow-lg transition-shadow",
+        selected && "ring-2 ring-primary"
       )}
     >
       {/* Top Handle */}
@@ -55,17 +55,17 @@ export function MessageNode({ data, selected }: MessageNodeProps) {
         <div className="flex items-center justify-between ">
           <div className="flex gap-2 items-center">
             {isUser ? (
-              <User className="size-5" />
+              <User className="size-6" />
             ) : ProviderIcon ? (
-              <ProviderIcon className="size-4" />
+              <ProviderIcon className="size-6" />
             ) : null}
-            <span className="font-semibold">
+            <span className="text-lg font-semibold">
               {isUser ? "You" : providerInfo?.displayName}
             </span>
             {message.metadata?.modelId && (
               <>
                 <Separator orientation="vertical" className="h-4" />
-                <div className="text-xs font-mono text-muted-forground">
+                <div className="font-mono text-muted-forground">
                   {message.metadata.modelId}
                 </div>
               </>
