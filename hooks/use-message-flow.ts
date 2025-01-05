@@ -29,25 +29,6 @@ export const useMessageFlow = () => {
   const { getModelById } = useProviderModels();
   const { callAPI } = useLLMAPI();
 
-  // // Build context chain from selected node
-  // const buildContextChain = useCallback((nodeId: string) => {
-  //   logger.debug(`Building context chain starting from ${nodeId}`);
-  //   const chain: Message[] = [];
-  //   let currentId: string | null = nodeId;
-
-  //   while (currentId) {
-  //     const node = nodes.find((n) => n.id === currentId);
-  //     if (!node) break;
-
-  //     chain.unshift(node.data.message);
-  //     currentId = node.data.message.parentId;
-  //   }
-
-  //   logger.debug("Context Chain:", chain);
-
-  //   return chain;
-  // }, [nodes]);
-
   const calculateNodePosition = useCallback(
     (parentId: string) => {
       const parentNode = nodes.find((n) => n.id === parentId);
@@ -106,7 +87,6 @@ export const useMessageFlow = () => {
           parameters,
         });
 
-        logger.info(response)
 
         // Create assistant message node
         const assistantMessage: Message = {
