@@ -1,44 +1,72 @@
 import { useCallback } from "react";
-import { useCanvas } from "./use-canvas";
+import { usePolyBranch } from "@/contexts/polybranch-context";
 import { useProviderModels } from "./use-provider-models";
 import { Message, MessageRole } from "@/types/messages";
+import { CoreLLMParameters } from "@/types/llm-parameters";
 import { useLLMAPI } from "@/lib/llm";
 import { logger } from "@/lib/logger";
 
-export const useMessageFlow = () => {
-  const { addMessageNode, nodes, selectedNode } = useCanvas();
-  logger.debug('useMessageFlow - selectedNodeId:', selectedNode)
-  logger.debug('useMessageFlow - canSendMessage:', selectedNode!== null)
+function buildContextChainFromNodes(
+  nodeId: string,
+  allNodes: { id: string; data: { message: Message } }[]
+): Message[] {
+  const chain: Message[] = [];
+  let currentId: string | null = nodeId;
 
+  while (currentId) {
+    const node = allNodes.find((n) => n.id === currentId);
+    if (!node) break;
+
+    chain.unshift(node.data.message);
+    currentId = node.data.message.parentId;
+  }
+
+  return chain;
+}
+
+export const useMessageFlow = () => {
+  const { addMessageNode, nodes, selectedNodeId } = usePolyBranch();
   const { getModelById } = useProviderModels();
   const { callAPI } = useLLMAPI();
 
-  // Build context chain from selected node
-  const buildContextChain = useCallback(
-    (nodeId: string) => {
-      const chain: Message[] = [];
-      let currentId: string | null = nodeId;
+  // // Build context chain from selected node
+  // const buildContextChain = useCallback((nodeId: string) => {
+  //   logger.debug(`Building context chain starting from ${nodeId}`);
+  //   const chain: Message[] = [];
+  //   let currentId: string | null = nodeId;
 
-      while (currentId) {
-        const node = nodes.find((n) => n.id === currentId);
-        if (!node) break;
+  //   while (currentId) {
+  //     const node = nodes.find((n) => n.id === currentId);
+  //     if (!node) break;
 
-        chain.unshift(node.data.message);
-        currentId = node.data.message.parentId;
+  //     chain.unshift(node.data.message);
+  //     currentId = node.data.message.parentId;
+  //   }
+
+  //   logger.debug("Context Chain:", chain);
+
+  //   return chain;
+  // }, [nodes]);
+
+  const calculateNodePosition = useCallback(
+    (parentId: string) => {
+      const parentNode = nodes.find((n) => n.id === parentId);
+      if (!parentId) {
+        return { x: 100, y: 100 };
       }
 
-      return chain;
+      // Position new node below its parent with some offset
+      return {
+        x: parentNode?.position.x ?? 100,
+        y: (parentNode?.position.y ?? 100) + 200,
+      };
     },
     [nodes]
   );
 
   const sendMessage = useCallback(
-    async (
-      content: string,
-      modelId: string,
-      parameters: Record<string, any>
-    ) => {
-      if (!selectedNode) {
+    async (content: string, modelId: string, parameters: CoreLLMParameters) => {
+      if (!selectedNodeId) {
         throw new Error("No node selected");
       }
 
@@ -50,30 +78,35 @@ export const useMessageFlow = () => {
       // Create user message node
       const userMessage: Message = {
         id: Date.now().toString(),
-        parentId: selectedNode,
+        parentId: selectedNodeId,
         role: "user" as MessageRole,
         content,
         timestamp: Date.now(),
-        metadata: {
-          modelId,
-          ...parameters,
-        },
       };
 
-      // Add user message to canvas
-      const userPosition = { x: 100, y: 200 }; // Calculate based on parent
-      await addMessageNode(selectedNode, userMessage, userPosition);
+      const userNode = {
+        id: userMessage.id,
+        data: { message: userMessage },
+        position: calculateNodePosition(selectedNodeId),
+      };
+      const updatedNodes = [...nodes, userNode];
+      const contextChain = buildContextChainFromNodes(
+        userMessage.id,
+        updatedNodes
+      );
 
-      // Get context and make API call
-      const context = buildContextChain(userMessage.id);
+      // Add user message to canvas
+      addMessageNode(selectedNodeId, userMessage, userNode.position);
 
       try {
         const response = await callAPI({
-          messages: context,
+          messages: contextChain,
           provider: model.provider,
           modelId: model.modelName,
           parameters,
         });
+
+        logger.info(response)
 
         // Create assistant message node
         const assistantMessage: Message = {
@@ -82,29 +115,43 @@ export const useMessageFlow = () => {
           role: "assistant",
           content: response.content,
           provider: model.provider,
-          timestamp: Date.now(),
+          timestamp: response.created,
           metadata: {
-            modelId,
-            ...parameters,
+            modelId: model.modelName,
+            tokenCount: response.usage,
+            completionTokens: response.usage,
+            // Add parameters like temp, top, etc
           },
         };
 
+        const assistantNode = {
+          id: assistantMessage.id,
+          data: { message: assistantMessage },
+          position: calculateNodePosition(userMessage.id),
+        };
+
         // Add assistant message to canvas
-        const assistantPosition = { x: 100, y: 400 }; // Calculate based on parent
-        await addMessageNode(
+        addMessageNode(
           userMessage.id,
           assistantMessage,
-          assistantPosition
+          assistantNode.position
         );
       } catch (error) {
         logger.error("API call failed:", error);
       }
     },
-    [selectedNode, addMessageNode, buildContextChain, getModelById, callAPI]
+    [
+      selectedNodeId,
+      addMessageNode,
+      nodes,
+      calculateNodePosition,
+      getModelById,
+      callAPI,
+    ]
   );
 
   return {
     sendMessage,
-    canSendMessage: selectedNode !== null,
+    canSendMessage: selectedNodeId !== null,
   };
 };
