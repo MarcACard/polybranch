@@ -14,9 +14,10 @@ import { useMessageFlow } from "@/hooks/use-message-flow";
 import { logger } from "@/lib/logger";
 
 export function Chat() {
-  const [message, setMessage] = React.useState("");
-  const [isVisible, setIsVisible] = React.useState(true);
+  const [message, setMessage] = React.useState<string>("");
+  const [isVisible, setIsVisible] = React.useState<boolean>(true);
   const [selectedModel, setSelectedModel] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const { canSendMessage, sendMessage } = useMessageFlow();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,10 +25,13 @@ export function Chat() {
     if (!message.trim() || !selectedModel) return;
 
     try {
+      setIsLoading(true);
       await sendMessage(message, selectedModel, {});
       setMessage("");
+      setIsLoading(false);
     } catch (error) {
       logger.error("Error sending message", error);
+      setIsLoading(false);
     }
   };
 
@@ -76,7 +80,7 @@ export function Chat() {
                 variant="default"
                 size="icon"
                 className="rounded-full"
-                disabled={!canSendMessage}
+                disabled={!(canSendMessage && !isLoading)}
                 data-can-send={canSendMessage}
               >
                 <MoveUp />
