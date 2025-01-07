@@ -82,7 +82,6 @@ export function Chat() {
                 size="icon"
                 className="rounded-full"
                 disabled={!(canSendMessage && !isLoading)}
-                data-can-send={canSendMessage}
               >
                 <MoveUp />
               </Button>
@@ -91,10 +90,15 @@ export function Chat() {
           {/* Chat Input */}
           <div className="min-h-[100px]">
             <Textarea
+              id="chatMessage"
+              name="message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Type your message."
               className="min-h-[100px] w-full resize-none border-0 focus-visible:ring-0 py-4 px-4 bg-primary-foreground"
+              onKeyDown={(e)=> {
+                if (e.key === "Enter" && !e.shiftKey) handleSubmit(e);
+              }}
             />
           </div>
         </form>
