@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    console.log(body)
+    console.log(body);
     const { provider, apiKey, model, messages, parameters } = body || {};
 
     if (!provider || !apiKey || !model || !messages) {
@@ -34,6 +34,17 @@ export async function POST(req: NextRequest) {
         })),
         ...parameters,
       };
+    } else if (provider === "google") {
+      apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}-latest:generateContent?key=${apiKey}`;
+      fetchHeaders = {
+        "Content-Type": "application/json",
+      };
+      fetchBody = {
+        contents: messages.map((m: any) => ({
+          role: m.role == "user" ? "user" : "model",
+          parts: [{ text: m.content }],
+        })),
+      };
     } else {
       return NextResponse.json(
         { error: `unsupported proivder: ${provider}"` },
@@ -41,8 +52,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log("fetchHeaders", fetchHeaders)
-    console.log("fetchBody", fetchBody)
+    console.log("fetchHeaders", fetchHeaders);
+    console.log("fetchBody", fetchBody);
 
     const response = await fetch(apiUrl, {
       method: "POST",
@@ -61,15 +72,24 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await response.json();
+    console.log(data);
 
-    console.log(`Usage Completion Tokens: ${data.usage.completion_tokens}`)
+    if (provider === "openai") {
+      console.log(`Usage Completion Tokens: ${data.usage.completion_tokens}`);
 
-    console.log(data)
-    return NextResponse.json({
-      content: data.choices[0].message.content,
-      usage: data.usage.completion_tokens,
-      created: data.created
-    });
+      console.log(data);
+      return NextResponse.json({
+        content: data.choices[0].message.content,
+        usage: data.usage.completion_tokens,
+        created: data.created,
+      });
+    } else if (provider === "google") {
+      return NextResponse.json({
+        content: data.candidates[0].content.parts[0].text,
+        usage: data.usageMetadata.candidatesTokenCount,
+        created: Date.now(),
+      });
+    }
   } catch (error: any) {
     return NextResponse.json(
       { error: error.message || "Unknown error occurred" },
