@@ -11,6 +11,7 @@ import { ChevronDown, ChevronUp, MoveUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import { useMessageFlow } from "@/hooks/use-message-flow";
+import { useToast } from "@/hooks/use-toast"
 import { logger } from "@/lib/logger";
 
 export function Chat() {
@@ -19,6 +20,7 @@ export function Chat() {
   const [selectedModel, setSelectedModel] = React.useState("");
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const { canSendMessage, sendMessage } = useMessageFlow();
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,11 +33,10 @@ export function Chat() {
       setIsLoading(false);
     } catch (error) {
       logger.error("Error sending message", error);
+      toast({ title: "Uh Oh...", description: `An issue occured trying to send your message. ${error}` })
       setIsLoading(false);
     }
   };
-
-  logger.debug("MessageInput - canSendMessage:", canSendMessage);
 
   return (
     <div
