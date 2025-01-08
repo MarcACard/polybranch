@@ -31,19 +31,45 @@ export const useMessageFlow = () => {
 
   const calculateNodePosition = useCallback(
     (parentId: string) => {
-      const parentNode = nodes.find((n) => n.id === parentId);
+      logger.debug("Calculating new Node Position - parentId:", parentId)
       if (!parentId) {
         return { x: 100, y: 100 };
       }
 
+      // Retreive Parent Node
+      const parentNode = nodes.find((n) => n.id === parentId);
+
+      if (parentNode === undefined) return { x: 100, y: 100 }
+
+      logger.debug("Calculating new Node Position - parentNode:", parentNode)
+
       // Position new node below its parent with some offset
       return {
-        x: parentNode?.position.x ?? 100,
-        y: (parentNode?.position.y ?? 100) + 200,
+        x: parentNode.position.x, // Default straight line down. 
+        y: parentNode.position.y + 100 + (parentNode?.measured?.height ?? 0), // Need to look into this more >.<
       };
     },
     [nodes]
   );
+
+  const placeAssistantNode = (assistantMessage: Message, parentId: string) => {
+    logger.debug("Placing Assistant Node")
+    requestAnimationFrame(() => {
+
+      const parentNode = nodes.find(n => n.id === parentId);
+      logger.debug("Placing Assistant Node - parentNode", parentNode)
+      const height = parentNode?.measured?.height ?? 0;
+
+      logger.debug("Placing Assistant Node - height:", height)
+      const assistantPos = {
+        x: parentNode?.position.x ?? 0,
+        y: (parentNode?.position.y ?? 0) + 100 + height
+      }
+
+      logger.debug("Placing Assistant Node - assistantPos:", assistantPos)
+      addMessageNode(parentNode.id, assistantMessage, assistantPos)
+    })
+  }
 
   const sendMessage = useCallback(
     async (content: string, modelId: string, parameters: CoreLLMParameters) => {
@@ -65,6 +91,7 @@ export const useMessageFlow = () => {
         timestamp: Date.now(),
       };
 
+      // Build a temp node in memory to build a context chain
       const userNode = {
         id: userMessage.id,
         data: { message: userMessage },
@@ -77,16 +104,20 @@ export const useMessageFlow = () => {
       );
 
       // Add user message to canvas
+      logger.debug("Placing User Message Node")
       addMessageNode(selectedNodeId, userMessage, userNode.position);
 
+      await new Promise(resolve => setTimeout(resolve, 50)); // Hacky Solution
+
       try {
+        logger.debug("Making call to API")
         const response = await callAPI({
           messages: contextChain,
           provider: model.provider,
           modelId: model.modelName,
           parameters,
         });
-
+        logger.debug("Response Returned from API")
 
         // Create assistant message node
         const assistantMessage: Message = {
@@ -104,17 +135,23 @@ export const useMessageFlow = () => {
           },
         };
 
-        const assistantNode = {
-          id: assistantMessage.id,
-          data: { message: assistantMessage },
-          position: calculateNodePosition(userMessage.id),
-        };
+        // const assistantNode = {
+        //   id: assistantMessage.id,
+        //   data: { message: assistantMessage },
+        //   position: calculateNodePosition(userMessage.id),
+        // };
 
         // Add assistant message to canvas
+
+        // placeAssistantNode(
+        //   assistantMessage,
+        //   userMessage.id
+        // )
+
         addMessageNode(
           userMessage.id,
           assistantMessage,
-          assistantNode.position
+          calculateNodePosition(userMessage.id)
         );
       } catch (error) {
         logger.error("API call failed:", error);

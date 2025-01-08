@@ -3,8 +3,8 @@
 import { Handle, Position, NodeProps } from "@xyflow/react";
 import { MessageNodeData } from "@/types/nodes";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { User, Ellipsis } from "lucide-react";
+import { MessageNodeMenu } from "@/components/canvas/message-node-menu"
+import { User } from "lucide-react";
 import { PROVIDERS } from "@/constants/models";
 import { cn } from "@/lib/utils";
 
@@ -71,11 +71,8 @@ export function MessageNode({ data, selected }: MessageNodeProps) {
               </>
             )}
           </div>
-          <div>
-            <Button variant="ghost" size="icon">
-              <Ellipsis />
-            </Button>
-          </div>
+          {/* MessageNode DropDown Menu */}
+          <MessageNodeMenu id={data.message.id} parentId={data.message.parentId} role={data.message.role}/>
         </div>
 
         <div className="whitespace-pre-wrap">{message.content}</div>

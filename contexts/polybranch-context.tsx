@@ -38,6 +38,14 @@ interface PolyBranchContextType {
     position: { x: number; y: number }
   ) => void;
 
+  deleteMessageNode: (
+    id: string
+  ) => void;
+
+  deleteMessageNodeAndChildren: (
+    id: string
+  ) => void;
+
   // Debug & Testing
   addTestNode: () => void;
 }
@@ -114,6 +122,28 @@ export function PolyBranchProvider({ children }: { children: ReactNode }) {
     []
   );
 
+  const deleteMessageNode = async (id: string) => {
+    logger.debug("Deleting Message Node:", id)
+    
+    // Filter out message node in current state
+    const updatedNodes = nodes.filter((nd) => nd.id !== id)
+    setNodes(updatedNodes)
+    // Filter out edges from current state
+    const updatedEdges = edges.filter((ed) => ed.sourceHandle !== id && ed.targetHandle !== id)
+    setEdges(updatedEdges)
+  }
+
+  const deleteMessageNodeAndChildren = async (id: string) => {
+    logger.debug("Deleting Message Node & All Children:", id)
+    
+    // Filter out message node in current state
+    const updatedNodes = nodes.filter((nd) => nd.id !== id)
+    setNodes(updatedNodes)
+    // Filter out edges from current state
+    const updatedEdges = edges.filter((ed) => ed.sourceHandle !== id && ed.targetHandle !== id)
+    setEdges(updatedEdges)
+  }
+
   const addTestNode = useCallback(() => {
     const testMessage: Message = {
       id: Date.now().toString(),
@@ -145,6 +175,8 @@ export function PolyBranchProvider({ children }: { children: ReactNode }) {
     onEdgesChange,
     onSelectionChange,
     addMessageNode,
+    deleteMessageNode,
+    deleteMessageNodeAndChildren,
     addTestNode,
   };
 
