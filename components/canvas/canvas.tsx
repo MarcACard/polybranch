@@ -1,48 +1,64 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
-import { ReactFlow, Background, Controls, useReactFlow } from "@xyflow/react";
+import { useState, useEffect, useCallback } from "react";
+import {
+  ReactFlow,
+  Background,
+  Controls,
+  useNodesState,
+  useEdgesState,
+  type Node,
+  type Edge,
+  type NodeChange,
+  type EdgeChange,
+} from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
+import { storage } from "@/lib/local-storage";
+import { StorageKeys } from "@/constants/storage-keys";
 import { MessageNode } from "@/components/canvas/message-node";
-import { usePolyBranch } from "@/contexts/polybranch-context";
-import { Button } from "@/components/ui/button";
-import { storage, StorageKeys } from "@/lib/storage";
+import { logger } from "@/lib/logger";
+
+const nodeTypes = { message: MessageNode };
 
 export function Canvas() {
-  const nodeTypes = useMemo(() => ({ message: MessageNode }), []);
-  const { setViewport } = useReactFlow();
+  const [nodes, setNodes, onNodesChange] = useNodesState(
+    storage.get<Node[]>(StorageKeys.CANVAS_NODES) ?? [],
+  );
+  const [edges, setEdges, onEdgesChange] = useEdgesState(
+    storage.get<Edge[]>(StorageKeys.CANVAS_EDGES) ?? [],
+  );
 
-  const {
-    nodes,
-    edges,
-    onNodesChange,
-    onEdgesChange,
-    onSelectionChange,
-    addTestNode,
-  } = usePolyBranch();
+  const handleNodeChange = useCallback(
+    (changes: NodeChange[]) => {
+      logger.debug("Node Change Detected", changes);
+      onNodesChange(changes);
+      storage.set(StorageKeys.CANVAS_NODES, nodes);
+    },
+    [nodes, onNodesChange],
+  );
 
-  // If no localStorage data, set viewport to default state
-  useEffect(() => {
-    const hasStoredCanvas = storage.get(StorageKeys.CANVAS_NODES);
-    if (!hasStoredCanvas) {
-      setViewport({ x: 0, y: 0, zoom: 1 });
-    }
-  }, [setViewport]);
+  const handleEdgeChanges = useCallback(
+    (changes: EdgeChange[]) => {
+      logger.debug("Edge Change Detected", changes);
+      onEdgesChange(changes);
+      storage.set(StorageKeys.CANVAS_EDGES, edges);
+    },
+    [edges, onEdgesChange],
+  );
 
   return (
     <>
-      {/* TEMP FOR TESTING */}
       <div className="absolute top-20 left-4 z-10">
-        <Button onClick={() => addTestNode()}>Add Test Node</Button>
+        {/* TODO: Re-implement test node functionality. */}
+        {/* <Button onClick={() => consoel.log("add test node")}>Add Test Node</Button> */}
       </div>
       <ReactFlow
         nodeTypes={nodeTypes}
         nodes={nodes}
         edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onSelectionChange={onSelectionChange}
+        onNodesChange={handleNodeChange}
+        onEdgesChange={handleEdgeChanges}
         minZoom={0.001}
       >
         <Background />
