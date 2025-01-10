@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback } from "react";
 import {
   ReactFlow,
   Background,
@@ -17,9 +17,23 @@ import "@xyflow/react/dist/style.css";
 import { storage } from "@/lib/local-storage";
 import { StorageKeys } from "@/constants/storage-keys";
 import { MessageNode } from "@/components/canvas/message-node";
+import { Button } from "@/components/ui/button";
+import { Message } from "@/types/messages";
 import { logger } from "@/lib/logger";
 
 const nodeTypes = { message: MessageNode };
+
+const testMessageData: Message = {
+  id: `msg-${Date.now()}`,
+  parentId: null,
+  role: "user",
+  content: "This is a user test node",
+  timestamp: Date.now(),
+};
+
+// const testNode = {
+//   id:
+// }
 
 export function Canvas() {
   const [nodes, setNodes, onNodesChange] = useNodesState(
@@ -47,11 +61,43 @@ export function Canvas() {
     [edges, onEdgesChange],
   );
 
+  const addTestNode = () => {
+    setNodes([
+      ...nodes,
+      {
+        id: Date.now().toString(),
+        type: "message",
+        position: {
+          x: -79.24426326976337,
+          y: -306.89658063526133,
+        },
+        data: {
+          message: {
+            id: "1736291567229",
+            parentId: null,
+            role: "user",
+            content: `Test Message ${Date.now()}`,
+            timestamp: 1736291567229,
+            metadata: {
+              promptTokens: 42,
+            },
+          },
+        },
+        measured: {
+          width: 720,
+          height: 135,
+        },
+        selected: false,
+        dragging: false,
+      },
+    ]);
+  };
+
   return (
     <>
       <div className="absolute top-20 left-4 z-10">
         {/* TODO: Re-implement test node functionality. */}
-        {/* <Button onClick={() => consoel.log("add test node")}>Add Test Node</Button> */}
+        <Button onClick={addTestNode}>Add Test Node</Button>
       </div>
       <ReactFlow
         nodeTypes={nodeTypes}

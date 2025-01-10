@@ -1,11 +1,8 @@
-
 import { Handle, Position, NodeProps } from "@xyflow/react";
 import { MessageNodeData } from "@/types/nodes";
-import { usePolyBranch} from "@/contexts/polybranch-context"
 
-import { cn } from "@/lib/utils"
-import { Ellipsis, Trash2, Pencil, RefreshCcw } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Ellipsis, Trash2, Pencil, RefreshCcw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,19 +13,15 @@ import {
   DropdownMenuPortal,
   DropdownMenuSub,
   DropdownMenuSubContent,
-  DropdownMenuSubTrigger
-} from "@/components/ui/dropdown-menu"
+  DropdownMenuSubTrigger,
+} from "@/components/ui/dropdown-menu";
 
-// TODO: Structure and pull from types?
 interface MessageNodeMenuProps {
   id: string | null;
-  parentId: string | null;
-  role: "user" | "assistant" | "system"
+  role: "user" | "assistant" | "system";
 }
 
-
-export function MessageNodeMenu({ id, parentId, role }: MessageNodeMenuProps) {
-  const { deleteMessageNode } = usePolyBranch();
+export function MessageNodeMenu({ id, role }: MessageNodeMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -45,10 +38,12 @@ export function MessageNodeMenu({ id, parentId, role }: MessageNodeMenuProps) {
             <span>Edit</span>
           </DropdownMenuItem>
         )}
-        {role === "assistant" && (<DropdownMenuItem>
-          <RefreshCcw className="muted-text-foreground" />
-          <span>Regenerate</span>
-        </DropdownMenuItem>)}
+        {role === "assistant" && (
+          <DropdownMenuItem>
+            <RefreshCcw className="muted-text-foreground" />
+            <span>Regenerate</span>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
             <Trash2 className="muted-text-foreground" />
@@ -56,12 +51,24 @@ export function MessageNodeMenu({ id, parentId, role }: MessageNodeMenuProps) {
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
             <DropdownMenuSubContent>
-              <DropdownMenuItem onClick={()=> {deleteMessageNode(id)}}>Selected Node</DropdownMenuItem>
-              <DropdownMenuItem>Selected Node & Below</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  console.log(`Delete node: ${id}`);
+                }}
+              >
+                Selected Node
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  console.log(`Delete sub node and all children of: ${id}`);
+                }}
+              >
+                Selected Node & Below
+              </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }
