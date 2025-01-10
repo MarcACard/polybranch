@@ -1,27 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { useProviderKeys } from "@/hooks/use-provider-keys";
+
+import { useApiKeys } from "@/contexts/api-key-context";
 import { LLMProvider } from "@/types/llm";
 import { PROVIDERS } from "@/constants/models";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/hooks/use-toast";
 
 import { Eye, EyeOff, Save, Trash2 } from "lucide-react";
 
 export const ProviderKeyManager = () => {
-  const { toast } = useToast()
-  const {
-    setProviderKey,
-    removeProviderKey,
-    hasProviderKey,
-    getProviderKey,
-  } = useProviderKeys();
   const [showKeys, setShowKeys] = useState<Record<string, boolean>>({});
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
+  const { toast } = useToast();
+  const { setApiKey, getApiKey, removeApiKey, hasApiKey } = useApiKeys();
 
   const toggleShowKey = (provider: LLMProvider) => {
     setShowKeys((prev) => ({ ...prev, [provider]: !prev[provider] }));
@@ -29,24 +25,23 @@ export const ProviderKeyManager = () => {
 
   const handleSave = (provider: LLMProvider, inputValue: string) => {
     if (inputValue.trim()) {
-      setProviderKey(provider, inputValue);
-      console.log('Attempting to show toast...');
+      setApiKey(provider, inputValue);
       toast({
         title: "API Key Saved",
         description: `Your API Key for ${PROVIDERS[provider].displayName} has been saved to Local Storage.`,
-      })
+      });
     }
   };
 
   const handleDelete = (provider: LLMProvider) => {
-    removeProviderKey(provider);
+    removeApiKey(provider);
     setShowKeys((prev) => ({ ...prev, [provider]: false }));
     setInputValues((prev) => ({ ...prev, [provider]: "" }));
 
     toast({
       title: "API Key Deleted",
-      description: `Your API Key for ${PROVIDERS[provider].displayName} has been deleted from Local Storage.`
-    })
+      description: `Your API Key for ${PROVIDERS[provider].displayName} has been deleted from Local Storage.`,
+    });
   };
 
   return (
@@ -55,10 +50,10 @@ export const ProviderKeyManager = () => {
         const providerInfo = PROVIDERS[provider];
         const Icon = providerInfo.icon;
 
-        const storedKey = getProviderKey(provider) ?? "";
+        const storedKey = hasApiKey(provider) ? getApiKey(provider)?.key : "";
         const currentInput = inputValues[provider] ?? storedKey;
 
-        const hasKey = hasProviderKey(provider);
+        const hasKey = hasApiKey(provider);
         const showKey = showKeys[provider] ?? false;
 
         const isNonEmpty = currentInput.trim().length > 0;
@@ -67,10 +62,7 @@ export const ProviderKeyManager = () => {
 
         return (
           <div key={provider} className="space-y-2">
-            <Label
-              htmlFor={`${provider}-api-key`}
-              className="text-sm font-semibold"
-            >
+            <Label htmlFor={`${provider}-api-key`} className="text-sm font-semibold">
               {providerInfo.displayName}
             </Label>
             <div className="flex items-center space-x-2">
@@ -95,11 +87,7 @@ export const ProviderKeyManager = () => {
                   onClick={() => toggleShowKey(provider)}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                 >
-                  {showKey ? (
-                    <EyeOff className="size-4" />
-                  ) : (
-                    <Eye className="size-4" />
-                  )}
+                  {showKey ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                 </button>
               </div>
               {/* Delete Button */}

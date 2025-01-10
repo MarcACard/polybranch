@@ -1,13 +1,14 @@
-import { useMemo, useCallback } from "react";
-import { LLMProvider } from "@/types/llm";
+import { useCallback } from "react";
+
+import { useApiKeys } from "@/contexts/api-key-context";
+
 import { PROVIDER_MODELS } from "@/constants/models";
-import { useProviderKeys } from "./use-provider-keys";
+import { LLMProvider } from "@/types/llm";
 
 export const useProviderModels = () => {
-  const { hasProviderKey } = useProviderKeys();
+  const { hasApiKey } = useApiKeys();
 
-  // Get all available models
-  const availableModels = useMemo(() => PROVIDER_MODELS, []);
+  const availableModels = PROVIDER_MODELS;
 
   /**
    * Get all models for a specific provider
@@ -15,10 +16,10 @@ export const useProviderModels = () => {
    */
   const getModelsForProvider = useCallback(
     (provider: LLMProvider) => {
-      if (!hasProviderKey(provider)) return [];
-      return availableModels.filter((model) => model.provider == provider);
+      if (!hasApiKey(provider)) return [];
+      return availableModels.filter((model) => model.provider === provider);
     },
-    [availableModels, hasProviderKey]
+    [hasApiKey],
   );
 
   /**
@@ -28,16 +29,17 @@ export const useProviderModels = () => {
   const getModelById = useCallback(
     (id: string) => {
       const model = availableModels.find((model) => model.id === id);
-      if (!model || !hasProviderKey(model.provider)) return null;
+      if (!model || !hasApiKey(model.provider)) return null;
       return model;
     },
-    [availableModels, hasProviderKey]
+    [hasApiKey],
   );
 
   /** Get all available models across providers with configured API keys */
-  const getActiveModels = useCallback(() => {
-    return availableModels.filter((model) => hasProviderKey(model.provider));
-  }, [availableModels, hasProviderKey]);
+  const getActiveModels = useCallback(
+    () => availableModels.filter((model) => hasApiKey(model.provider)),
+    [hasApiKey],
+  );
 
   return {
     availableModels,

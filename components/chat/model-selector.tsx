@@ -1,16 +1,14 @@
 import React from "react";
+
 import { useProviderModels } from "@/hooks/use-provider-models";
-import { useProviderKeys } from "@/hooks/use-provider-keys";
+import { useApiKeys } from "@/contexts/api-key-context";
+
+import { cn } from "@/lib/utils";
 import { PROVIDERS, PROVIDER_MODELS } from "@/constants/models";
 import { LLMProvider } from "@/types/llm";
-import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Command,
   CommandEmpty,
@@ -29,11 +27,11 @@ interface ModelSelectorProps {
 
 export function ModelSelector({ value, onChange }: ModelSelectorProps) {
   const { getModelsForProvider } = useProviderModels();
-  const { hasProviderKey } = useProviderKeys();
+  const { hasApiKey } = useApiKeys();
   const [open, setOpen] = React.useState(false);
 
-  const activeProviders = (Object.keys(PROVIDERS) as LLMProvider[]).filter(
-    (provider) => hasProviderKey(provider)
+  const activeProviders = (Object.keys(PROVIDERS) as LLMProvider[]).filter((provider) =>
+    hasApiKey(provider),
   );
 
   return (
@@ -47,9 +45,7 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps) {
         >
           {value
             ? (() => {
-                const selectedModel = PROVIDER_MODELS.find(
-                  (model) => model.modelName === value
-                );
+                const selectedModel = PROVIDER_MODELS.find((model) => model.modelName === value);
                 if (selectedModel) {
                   const providerInfo = PROVIDERS[selectedModel.provider];
                   const Icon = providerInfo.icon;
@@ -97,18 +93,14 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps) {
                           <Check
                             className={cn(
                               "h-4 w-4",
-                              value === model.modelName
-                                ? "opacity-100"
-                                : "opacity-0"
+                              value === model.modelName ? "opacity-100" : "opacity-0",
                             )}
                           />
                         </div>
                       </CommandItem>
                     ))}
                   </CommandGroup>
-                  {i !== arr.length - 1 && arr.length > 1 && (
-                    <CommandSeparator />
-                  )}
+                  {i !== arr.length - 1 && arr.length > 1 && <CommandSeparator />}
                 </React.Fragment>
               );
             })}
