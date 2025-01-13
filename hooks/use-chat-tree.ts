@@ -5,6 +5,7 @@ import {
   type Edge,
   type NodeChange,
   type EdgeChange,
+  type XYPosition,
 } from "@xyflow/react";
 
 import { logger } from "@/lib/logger";
@@ -49,6 +50,29 @@ export const useChatTree = () => {
 
   // === Utilities ====
   /**
+   * Calculate Coordinates for a New Node
+   */
+  const calcNodeCoordinates = (parentId?: string): XYPosition => {
+    let x = 0;
+    let y = 0;
+
+    const parentNode = nodes.find((node) => node.id === parentId);
+    logger.debug("calcNodeCoordinates, parent node:", parentNode);
+
+    // Generate new position if parent exists
+    if (parentNode) {
+      x = parentNode.position.x;
+      // Starting Location + Parent Node Height + "Buffer"
+      y = parentNode.position.y + (parentNode.measured?.height ?? 0) + 75;
+    }
+
+    return {
+      x,
+      y,
+    };
+  };
+
+  /**
    * Return All Nodes Currently Selected in ReactFlow Canvas
    */
   const getSelectedNodes = () => {
@@ -58,16 +82,16 @@ export const useChatTree = () => {
   /**
    * Add a MessageNode to ReactFlow Canvas
    */
-  const addMessage = (messageData: MessageNodeData, parentId?: string) => {
+  const addMessage = (messageData: MessageNodeData) => {
+    // Determine if a single node is selected
+    const selectedNodes = getSelectedNodes();
+    const parentId = selectedNodes[0]?.id;
+
     const id = Date.now().toString(); // Generate Id
     const node: MessageNode = {
       id,
       type: "message",
-      // TODO: Generate a location dynamically based on parent id.
-      position: {
-        x: -79.24426326976337,
-        y: -306.89658063526133,
-      },
+      position: calcNodeCoordinates(parentId),
       data: messageData,
     };
 
@@ -90,7 +114,7 @@ export const useChatTree = () => {
     const data: MessageNodeData = {
       message: {
         role: "user",
-        content: `This is a new unique message. ${Date.now()}`,
+        content: `TEST MESSAGE | This is a new unique message. ${Date.now()}`,
         timestamp: Date.now(),
       },
     };
