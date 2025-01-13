@@ -12,7 +12,6 @@ import { storage } from "@/lib/local-storage";
 import { StorageKeys } from "@/constants/storage-keys";
 import { MessageNode, MessageNodeData } from "@/types/nodes";
 
-// TODO: Expose currently selected node
 export const useChatTree = () => {
   // CORE STATE, Init from Local Storage
   const [nodes, setNodes, onNodesChange] = useNodesState(
@@ -45,15 +44,16 @@ export const useChatTree = () => {
   // Need this b/c handleNodeChanges & handleEdgeChanges won't account for net new edges and nodes.
   useEffect(() => {
     storage.set(StorageKeys.CANVAS_NODES, nodes);
-      storage.set(StorageKeys.CANVAS_EDGES, edges);
+    storage.set(StorageKeys.CANVAS_EDGES, edges);
   }, [nodes, edges]);
 
+  // === Utilities ====
   /**
    * Return All Nodes Currently Selected in ReactFlow Canvas
    */
-  const getSelectedNodes = useCallback(() => {
+  const getSelectedNodes = () => {
     return nodes.filter((node) => node.selected == true);
-  }, [nodes]);
+  };
 
   /**
    * Add a MessageNode to ReactFlow Canvas
@@ -98,6 +98,14 @@ export const useChatTree = () => {
     addMessage(data);
   };
 
+  /**
+   * Delete all Edges and Nodes. Used w/ Debug Toolbar
+   */
+  const deleteAll = () => {
+    setNodes(() => []);
+    setEdges(() => []);
+  };
+
   return {
     nodes,
     edges,
@@ -106,5 +114,6 @@ export const useChatTree = () => {
     getSelectedNodes,
     addMessage,
     addTestMessage,
+    deleteAll,
   };
 };

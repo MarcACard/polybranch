@@ -1,9 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { FilePlus, FileX } from "lucide-react";
+import { FilePlus, Trash2 } from "lucide-react";
 
 // TODO: Conditionally Render? - Pass State from Layer up -> View / Hide
-export function DebugToolbar({ addTestMessage }: { addTestMessage: () => void }) {
+export function DebugToolbar({
+  addTestMessage,
+  deleteAll,
+}: {
+  addTestMessage: () => void;
+  deleteAll: () => void;
+}) {
   return (
     <div className="fixed bottom-1/2 right-0 mr-4 pointer-events-none z-50">
       <div className="pointer-events-auto  drop-shadow-md">
@@ -20,9 +26,8 @@ export function DebugToolbar({ addTestMessage }: { addTestMessage: () => void })
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button size="icon" variant="ghost" className="rounded-full">
-                {/* TODO: Setup Delete All Debug Tool */}
-                <FileX />
+              <Button onClick={deleteAll} size="icon" variant="ghost" className="rounded-full">
+                <Trash2 />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="left">

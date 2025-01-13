@@ -17,7 +17,7 @@ export default function Home() {
         <ReactFlowProvider>
           <main className="w-full h-full">
             <AppTopBar />
-            <DebugToolbar addTestMessage={chatTree.addTestMessage} />
+            <DebugToolbar addTestMessage={chatTree.addTestMessage} deleteAll={chatTree.deleteAll} />
             <Chat addMessage={chatTree.addMessage} getSelectedNodes={chatTree.getSelectedNodes} />
             <Canvas {...chatTree} />
           </main>

@@ -16,35 +16,29 @@ import { MessageNode, MessageNodeData } from "@/types/nodes";
 
 export function Chat({
   addMessage,
-  getSelectedNodes,
 }: {
-  addMessage: (messageData: MessageNodeData, parentId: string) => void;
-  getSelectedNodes: () => MessageNode[];
+  addMessage: (messageData: MessageNodeData, parentId?: string) => void;
 }) {
   const [message, setMessage] = React.useState("");
   const [isVisible, setIsVisible] = React.useState(true);
   const [selectedModel, setSelectedModel] = React.useState("");
 
-  const selectedNodes = getSelectedNodes();
-  const singleNodeSelected = selectedNodes.length === 1;
-
   const { toast } = useToast();
+
+  console.log("Chat Component Rendered");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim() || !selectedModel) return;
 
     // Add user message immediately to the canvas.
-    addMessage(
-      {
-        message: {
-          role: "user",
-          content: message,
-          timestamp: 0,
-        },
+    addMessage({
+      message: {
+        role: "user",
+        content: message,
+        timestamp: 0,
       },
-      selectedNodes[0].id,
-    );
+    });
 
     // Kick off Request to the backend.
     try {
@@ -101,7 +95,7 @@ export function Chat({
                 variant="default"
                 size="icon"
                 className="rounded-full"
-                disabled={!singleNodeSelected} // TODO: Logic to disable when processing msg & response
+                // disabled={!} // TODO: Logic to disable when processing msg & response
               >
                 <MoveUp />
               </Button>
