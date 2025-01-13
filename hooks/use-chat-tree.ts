@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import {
   useNodesState,
   useEdgesState,
@@ -22,24 +22,31 @@ export const useChatTree = () => {
     storage.get<Edge[]>(StorageKeys.CANVAS_EDGES) ?? [],
   );
 
-  // Sync All Node & Edge Changes w/ Local Storage
+  // Passed to ReactFlow and triggers whenever state changes take place with nodes or edges.
+  // onNodeChange / onEdgeChange is a helper from Reactflow to merge new and existing state.
+  // Might need to adjust in the future or customize.
   const handleNodeChanges = useCallback(
     (changes: NodeChange<MessageNode>[]) => {
       logger.debug("Node Change Detected", changes);
       onNodesChange(changes);
-      storage.set(StorageKeys.CANVAS_NODES, nodes);
     },
-    [nodes, onNodesChange],
+    [onNodesChange],
   );
 
   const handleEdgeChanges = useCallback(
     (changes: EdgeChange[]) => {
       logger.debug("Edge Change Detected", changes);
       onEdgesChange(changes);
-      storage.set(StorageKeys.CANVAS_EDGES, edges);
     },
-    [edges, onEdgesChange],
+    [onEdgesChange],
   );
+
+  // useEffects for edge & nodes ensure that all state changes are persisted to local storage
+  // Need this b/c handleNodeChanges & handleEdgeChanges won't account for net new edges and nodes.
+  useEffect(() => {
+    storage.set(StorageKeys.CANVAS_NODES, nodes);
+      storage.set(StorageKeys.CANVAS_EDGES, edges);
+  }, [nodes, edges]);
 
   /**
    * Return All Nodes Currently Selected in ReactFlow Canvas
