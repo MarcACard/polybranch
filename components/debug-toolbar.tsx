@@ -7,10 +7,10 @@ export function DebugToolbar({ addTestMessage }: { addTestMessage: () => void })
   return (
     <div className="fixed bottom-1/2 right-0 mr-4 pointer-events-none z-50">
       <div className="pointer-events-auto  drop-shadow-md">
-        <div className="flex flex-col p-1 gap-1 rounded bg-background border-2 border-red-500">
+        <div className="flex flex-col p-1 gap-1 rounded-full bg-background border-2 border-destructive">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button onClick={addTestMessage} size="icon" variant="ghost">
+              <Button onClick={addTestMessage} size="icon" variant="ghost" className="rounded-full">
                 <FilePlus />
               </Button>
             </TooltipTrigger>
@@ -20,7 +20,7 @@ export function DebugToolbar({ addTestMessage }: { addTestMessage: () => void })
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button size="icon" variant="ghost" className="">
+              <Button size="icon" variant="ghost" className="rounded-full">
                 {/* TODO: Setup Delete All Debug Tool */}
                 <FileX />
               </Button>
