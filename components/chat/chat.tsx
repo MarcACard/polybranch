@@ -12,12 +12,21 @@ import { ModelConfiguration } from "@/components/chat/model-configuration";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp, MoveUp } from "lucide-react";
+import { MessageNode, MessageNodeData } from "@/types/nodes";
 
-export function Chat() {
+export function Chat({
+  addMessage,
+  getSelectedNodes,
+}: {
+  addMessage: (messageData: MessageNodeData, parentId: string) => void;
+  getSelectedNodes: () => MessageNode[];
+}) {
   const [message, setMessage] = React.useState("");
   const [isVisible, setIsVisible] = React.useState(true);
   const [selectedModel, setSelectedModel] = React.useState("");
-  // const { canSendMessage, sendMessage } = useMessageFlow();  // TODO: Rewrite
+
+  const selectedNodes = getSelectedNodes();
+  const singleNodeSelected = selectedNodes.length === 1;
 
   const { toast } = useToast();
 
@@ -25,6 +34,19 @@ export function Chat() {
     e.preventDefault();
     if (!message.trim() || !selectedModel) return;
 
+    // Add user message immediately to the canvas.
+    addMessage(
+      {
+        message: {
+          role: "user",
+          content: message,
+          timestamp: 0,
+        },
+      },
+      selectedNodes[0].id,
+    );
+
+    // Kick off Request to the backend.
     try {
       // await sendMessage(message, selectedModel, {});
       console.log("message sent!");
@@ -79,7 +101,7 @@ export function Chat() {
                 variant="default"
                 size="icon"
                 className="rounded-full"
-                // disabled={} // TODO: Logic to disable when processing msg & response
+                disabled={!singleNodeSelected} // TODO: Logic to disable when processing msg & response
               >
                 <MoveUp />
               </Button>

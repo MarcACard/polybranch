@@ -3,7 +3,7 @@
 import { Handle, Position, NodeProps } from "@xyflow/react";
 import { MessageNodeData } from "@/types/nodes";
 import { Separator } from "@/components/ui/separator";
-import { MessageNodeMenu } from "@/components/canvas/message-node-menu"
+import { MessageNodeMenu } from "@/components/canvas/message-node-menu";
 import { User } from "lucide-react";
 import { PROVIDERS } from "@/constants/models";
 import { cn } from "@/lib/utils";
@@ -28,12 +28,11 @@ function formatTime(value: number, type: "unix" | "dateString") {
   });
 }
 
-export function MessageNode({ data, selected }: MessageNodeProps) {
+export function MessageNode({ id, data, selected }: MessageNodeProps) {
   const { message } = data;
   const isUser = message.role === "user";
 
-  const providerInfo =
-    !isUser && message.provider ? PROVIDERS[message.provider] : null;
+  const providerInfo = !isUser && message.provider ? PROVIDERS[message.provider] : null;
   const ProviderIcon = providerInfo?.icon;
 
   const formattedTime = isUser
@@ -44,13 +43,12 @@ export function MessageNode({ data, selected }: MessageNodeProps) {
     <div
       className={cn(
         "group relative rounded-lg border w-[720px] bg-background drop-shadow hover:drop-shadow-lg transition-shadow",
-        selected && "ring-2 ring-primary"
+        selected && "ring-2 ring-primary",
       )}
     >
       {/* Top Handle */}
-      {message.parentId && (
-        <Handle type="target" position={Position.Top} className="!w-2 !h-2" />
-      )}
+      {/* TODO: Conditionally Render Top Handle if it has a parent edge */}
+      <Handle type="target" position={Position.Top} className="!w-2 !h-2" />
       <div className="p-4 space-y-2">
         <div className="flex items-center justify-between ">
           <div className="flex gap-2 items-center">
@@ -65,14 +63,12 @@ export function MessageNode({ data, selected }: MessageNodeProps) {
             {message.metadata?.modelId && (
               <>
                 <Separator orientation="vertical" className="h-4" />
-                <div className="font-mono text-muted-forground">
-                  {message.metadata.modelId}
-                </div>
+                <div className="font-mono text-muted-forground">{message.metadata.modelId}</div>
               </>
             )}
           </div>
           {/* MessageNode DropDown Menu */}
-          <MessageNodeMenu id={data.message.id} parentId={data.message.parentId} role={data.message.role}/>
+          <MessageNodeMenu id={id} role={data.message.role} />
         </div>
 
         <div className="whitespace-pre-wrap">{message.content}</div>

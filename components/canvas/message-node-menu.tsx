@@ -33,13 +33,15 @@ export function MessageNodeMenu({ id, role }: MessageNodeMenuProps) {
         <DropdownMenuLabel>Message Options</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {role === "user" && (
-          <DropdownMenuItem>
+          // TODO: Setup Edit Functionality
+          <DropdownMenuItem onClick={() => console.log(`Edit Node: ${id}`)}>
             <Pencil className="muted-text-foreground" />
             <span>Edit</span>
           </DropdownMenuItem>
         )}
         {role === "assistant" && (
-          <DropdownMenuItem>
+          // TODO: Setup Regenerate Functionality
+          <DropdownMenuItem onClick={() => console.log(`Regenerate Node: ${id}`)}>
             <RefreshCcw className="muted-text-foreground" />
             <span>Regenerate</span>
           </DropdownMenuItem>
@@ -52,6 +54,7 @@ export function MessageNodeMenu({ id, role }: MessageNodeMenuProps) {
           <DropdownMenuPortal>
             <DropdownMenuSubContent>
               <DropdownMenuItem
+                // TODO: Setup Delete Functionality from Sub-Menu
                 onClick={() => {
                   console.log(`Delete node: ${id}`);
                 }}
@@ -59,6 +62,7 @@ export function MessageNodeMenu({ id, role }: MessageNodeMenuProps) {
                 Selected Node
               </DropdownMenuItem>
               <DropdownMenuItem
+                // TODO: Setup Delete All Children Functionality from Sub-Menu
                 onClick={() => {
                   console.log(`Delete sub node and all children of: ${id}`);
                 }}
