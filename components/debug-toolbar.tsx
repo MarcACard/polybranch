@@ -21,7 +21,7 @@ export function DebugToolbar({ addTestMessage }: { addTestMessage: () => void })
           <Tooltip>
             <TooltipTrigger asChild>
               <Button size="icon" variant="ghost" className="">
-                <FileX />
+                <FileX /> // TODO: Setup Delete All Debug Tool
               </Button>
             </TooltipTrigger>
             <TooltipContent side="left">
