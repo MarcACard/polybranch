@@ -25,8 +25,6 @@ export function Chat({
 
   const { toast } = useToast();
 
-  console.log("Chat Component Rendered");
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim() || !selectedModel) return;
@@ -36,7 +34,7 @@ export function Chat({
       message: {
         role: "user",
         content: message,
-        timestamp: 0,
+        timestamp: Date.now(),
       },
     });
 
