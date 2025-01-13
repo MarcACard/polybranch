@@ -41,6 +41,9 @@ export default function ApiKeyContextProvider({ children }: { children: React.Re
     });
   }, []);
 
+  /**
+   * Removes a provider's API Key from local storage.
+   */
   const removeApiKey = useCallback((provider: LLMProvider) => {
     // Functional Update Pattern
     // https://react.dev/reference/react/useState#setstate-parameters
@@ -49,6 +52,9 @@ export default function ApiKeyContextProvider({ children }: { children: React.Re
     });
   }, []);
 
+  /**
+   * Retreive a Provider's API Key.
+   */
   const getApiKey = useCallback(
     (provider: LLMProvider): ProviderApiKey | null => {
       return apiKeys.find((key) => key.provider === provider) ?? null;
@@ -56,6 +62,9 @@ export default function ApiKeyContextProvider({ children }: { children: React.Re
     [apiKeys],
   );
 
+  /**
+   * Determines if an API exists for a provider. This does not know if a provider key is valid.
+   */
   const hasApiKey = useCallback(
     (provider: LLMProvider): boolean => {
       return apiKeys.some((key) => key.provider === provider);
