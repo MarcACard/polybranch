@@ -4,7 +4,7 @@ import { Handle, Position, NodeProps } from "@xyflow/react";
 import { MessageNodeData } from "@/types/nodes";
 import { Separator } from "@/components/ui/separator";
 import { MessageNodeMenu } from "@/components/canvas/message-node-menu";
-import { User } from "lucide-react";
+import { User, SquareChevronRight } from "lucide-react";
 import { PROVIDERS } from "@/constants/models";
 import { cn } from "@/lib/utils";
 
@@ -32,12 +32,13 @@ export function MessageNode({ id, data, selected }: MessageNodeProps) {
   const { message } = data;
   const isUser = message.role === "user";
 
-  const providerInfo = !isUser && message.provider ? PROVIDERS[message.provider] : null;
+  // User Created Nodes may have a provider, but we don't want to show it on the node.
+  const providerInfo = !isUser && data.provider ? PROVIDERS[data.provider] : null;
   const ProviderIcon = providerInfo?.icon;
 
   const formattedTime = isUser
-    ? formatTime(message.timestamp, "dateString")
-    : formatTime(message.timestamp, "unix");
+    ? formatTime(data.timestamp, "dateString")
+    : formatTime(data.timestamp, "unix");
 
   return (
     <div
@@ -47,40 +48,49 @@ export function MessageNode({ id, data, selected }: MessageNodeProps) {
       )}
     >
       {/* Top Handle */}
-      {/* TODO: Conditionally Render Top Handle if it has a parent edge */}
+      {/* TODO: Conditionally Render Top Handle if it has a parent edge - e.g. the node is a target of an edge */}
       <Handle type="target" position={Position.Top} className="!w-2 !h-2" />
       <div className="p-4 space-y-2">
         <div className="flex items-center justify-between ">
-          <div className="flex gap-2 items-center">
-            {isUser ? (
+          {message.role === "user" && (
+            <div className="flex gap-2 items-center">
               <User className="size-6" />
-            ) : ProviderIcon ? (
-              <ProviderIcon className="size-6" />
-            ) : null}
-            <span className="text-lg font-semibold">
-              {isUser ? "You" : providerInfo?.displayName}
-            </span>
-            {message.metadata?.modelId && (
-              <>
-                <Separator orientation="vertical" className="h-4" />
-                <div className="font-mono text-muted-forground">{message.metadata.modelId}</div>
-              </>
-            )}
-          </div>
+              <span className="text-lg font-semibold">You</span>
+            </div>
+          )}
+          {message.role === "assistant" && (
+            <div className="flex gap-2 items-center">
+              {ProviderIcon && <ProviderIcon className="size-6" />}
+              <span className="text-lg font-semibold">{providerInfo?.displayName}</span>
+              <Separator orientation="vertical" className="h-4" />
+              <div className="font-mono text-muted-foreground">{data.providerModel?.id}</div>
+            </div>
+          )}
+          {message.role === "system" && (
+            <div className="flex gap-2 items-center">
+              <SquareChevronRight className="size-6" />
+              <span className="text-lg font-semibold">System Prompt</span>
+            </div>
+          )}
+
           {/* MessageNode DropDown Menu */}
           <MessageNodeMenu id={id} role={data.message.role} />
         </div>
 
         <div className="whitespace-pre-wrap">{message.content}</div>
 
-        <Separator />
-        <div className="flex justify-between text-xs text-muted-foregorund">
-          <div>
-            <span className="font-semibold">Tokens: </span>
-            {message.metadata?.tokenCount}
-          </div>
-          <div>{formattedTime}</div>
-        </div>
+        {message.role !== "system" && (
+          <>
+            <Separator />
+            <div className="flex justify-between text-xs text-muted-foregorund">
+              <div>
+                <span className="font-semibold">Tokens: </span>
+                {data?.tokenCount}
+              </div>
+              <div>{formattedTime}</div>
+            </div>
+          </>
+        )}
       </div>
       {/* Bottom Handle */}
       <Handle type="source" position={Position.Bottom} className="!w-2 !h-2" />

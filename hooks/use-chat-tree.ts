@@ -52,23 +52,16 @@ export const useChatTree = () => {
   /**
    * Calculate Coordinates for a New Node
    */
-  const calcNodeCoordinates = (parentId?: string): XYPosition => {
-    let x = 0;
-    let y = 0;
-
-    const parentNode = nodes.find((node) => node.id === parentId);
-    logger.debug("calcNodeCoordinates, parent node:", parentNode);
-
-    // Generate new position if parent exists
-    if (parentNode) {
-      x = parentNode.position.x;
-      // Starting Location + Parent Node Height + "Buffer"
-      y = parentNode.position.y + (parentNode.measured?.height ?? 0) + 75;
-    }
+  const calcNodeCoordinates = (
+    parentNodePosition: XYPosition,
+    parentNodeHeight?: number,
+  ): XYPosition => {
+    if (!parentNodeHeight) logger.warn("calcNodeCoordinates - parentNodeHeight undefined");
+    const defaultGap = 75; // Default distance between two nodes.
 
     return {
-      x,
-      y,
+      x: parentNodePosition.x,
+      y: parentNodePosition.y + (parentNodeHeight ?? 0) + defaultGap,
     };
   };
 
@@ -82,18 +75,25 @@ export const useChatTree = () => {
   /**
    * Add a MessageNode to ReactFlow Canvas
    */
-  const addMessage = (messageData: MessageNodeData) => {
-    // Determine if a single node is selected
-    const selectedNodes = getSelectedNodes();
-    const parentId = selectedNodes[0]?.id;
+  const addMessage = (messageData: MessageNodeData, parentId?: string) => {
+    // TODO: New ID Generation Method
+    const id = Date.now().toString();
+    logger.debug("Adding Message Node", { id, parentId, messageData });
 
-    const id = Date.now().toString(); // Generate Id
-    const node: MessageNode = {
-      id,
-      type: "message",
-      position: calcNodeCoordinates(parentId),
-      data: messageData,
-    };
+    setNodes((nodes) => {
+      const parentNode = nodes.find((node) => node.id === parentId);
+
+      const newNode: MessageNode = {
+        id,
+        type: "message",
+        position: parentNode
+          ? calcNodeCoordinates(parentNode.position, parentNode.measured?.height)
+          : { x: 0, y: 0 },
+        data: messageData,
+      };
+
+      return [...nodes, newNode];
+    });
 
     // Create & Add an edge if a parent Id exists.
     if (parentId !== undefined) {
@@ -104,7 +104,8 @@ export const useChatTree = () => {
       };
       setEdges((edges) => [...edges, edge]);
     }
-    setNodes((nodes) => [...nodes, node]);
+
+    return id;
   };
 
   /**
@@ -115,8 +116,22 @@ export const useChatTree = () => {
       message: {
         role: "user",
         content: `TEST MESSAGE | This is a new unique message. ${Date.now()}`,
-        timestamp: Date.now(),
       },
+      timestamp: Date.now(),
+    };
+
+    addMessage(data);
+  };
+  /**
+   * Adds a system message node to ReactFlow. Used w/ Debug Toolbar
+   */
+  const addSystemMessage = () => {
+    const data: MessageNodeData = {
+      message: {
+        role: "system",
+        content: "You are a helpful assistant.",
+      },
+      timestamp: Date.now(),
     };
 
     addMessage(data);
@@ -131,13 +146,18 @@ export const useChatTree = () => {
   };
 
   return {
+    // State
     nodes,
     edges,
+    // Reactflow Callbacks
     handleNodeChanges,
     handleEdgeChanges,
+    // Helpers
     getSelectedNodes,
     addMessage,
+    // Debug Helpers
     addTestMessage,
+    addSystemMessage,
     deleteAll,
   };
 };

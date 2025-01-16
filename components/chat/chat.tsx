@@ -3,7 +3,6 @@
 import React from "react";
 
 import { useToast } from "@/hooks/use-toast";
-// import { useMessageFlow } from "@/hooks/use-message-flow";
 import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
 
@@ -12,36 +11,51 @@ import { ModelConfiguration } from "@/components/chat/model-configuration";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp, MoveUp } from "lucide-react";
-import { MessageNode, MessageNodeData } from "@/types/nodes";
 
-export function Chat({
-  addMessage,
-}: {
-  addMessage: (messageData: MessageNodeData, parentId?: string) => void;
-}) {
+import { ProviderModel, ModelConfig } from "@/types/llm";
+import { MessageNode } from "@/types/nodes";
+
+interface ChatProps {
+  onChatSend: (
+    parentId: string,
+    message: string,
+    providerModel: ProviderModel,
+    parameters: ModelConfig,
+  ) => Promise<void>;
+  getSelectedNodes: () => MessageNode[];
+}
+
+export function Chat({ onChatSend, getSelectedNodes }: ChatProps) {
   const [message, setMessage] = React.useState("");
   const [isVisible, setIsVisible] = React.useState(true);
+  // TODO: adjust to use ProviderModel Type
   const [selectedModel, setSelectedModel] = React.useState("");
 
   const { toast } = useToast();
 
+  const selectedNodes = getSelectedNodes();
+  const selectedNodeId = selectedNodes.length === 1 ? selectedNodes[0].id : null;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim() || !selectedModel) return;
+    console.log(selectedNodeId);
+    if (!message.trim() || !selectedModel || !selectedNodeId) return;
 
-    // Add user message immediately to the canvas.
-    addMessage({
-      message: {
-        role: "user",
-        content: message,
-        timestamp: Date.now(),
-      },
-    });
-
-    // Kick off Request to the backend.
     try {
-      // await sendMessage(message, selectedModel, {});
-      console.log("message sent!");
+      // TODO: Replace hard-coded model with selected Model State
+      // TODO: Need a "Loading State", otherwise you just see a delay.
+      await onChatSend(
+        selectedNodeId,
+        message,
+        {
+          id: "gpt-4o-mini",
+          name: "GPT-4o mini",
+          modelName: "gpt-4o-mini",
+          provider: "openai",
+          maxTokens: 128000,
+        },
+        {},
+      );
       setMessage("");
     } catch (error) {
       logger.error("Error sending message", error);
@@ -50,6 +64,17 @@ export function Chat({
         description: `An issue occured trying to send your message. ${error}`,
       });
     }
+  };
+
+  /**
+   * Returns True if all conditions are met to submit a message.
+   * - Model is Selected
+   * - A *Single* Node is Selected
+   * - TextArea input is not empty
+   * @returns boolean
+   */
+  const canSubmit = () => {
+    return message.trim() && selectedModel && selectedNodeId;
   };
 
   return (
@@ -93,7 +118,7 @@ export function Chat({
                 variant="default"
                 size="icon"
                 className="rounded-full"
-                // disabled={!} // TODO: Logic to disable when processing msg & response
+                disabled={!canSubmit()} // TODO: Logic to disable when processing msg & response
               >
                 <MoveUp />
               </Button>

@@ -1,13 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { FilePlus, Trash2 } from "lucide-react";
+import { FilePlus, Trash2, FileCog } from "lucide-react";
 
 // TODO: Conditionally Render? - Pass State from Layer up -> View / Hide
 export function DebugToolbar({
   addTestMessage,
+  addSystemMessage,
   deleteAll,
 }: {
   addTestMessage: () => void;
+  addSystemMessage: () => void;
   deleteAll: () => void;
 }) {
   return (
@@ -22,6 +24,21 @@ export function DebugToolbar({
             </TooltipTrigger>
             <TooltipContent side="left">
               <p>Add Test Message</p>
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={addSystemMessage}
+                size="icon"
+                variant="ghost"
+                className="rounded-full"
+              >
+                <FileCog />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="left">
+              <p>Add System Message</p>
             </TooltipContent>
           </Tooltip>
           <Tooltip>

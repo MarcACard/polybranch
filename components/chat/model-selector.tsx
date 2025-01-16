@@ -45,14 +45,14 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps) {
         >
           {value
             ? (() => {
-                const selectedModel = PROVIDER_MODELS.find((model) => model.modelName === value);
+                const selectedModel = PROVIDER_MODELS.find((model) => model.id === value);
                 if (selectedModel) {
                   const providerInfo = PROVIDERS[selectedModel.provider];
                   const Icon = providerInfo.icon;
                   return (
                     <div className="flex items-center gap-2">
                       <Icon />
-                      <span>{selectedModel.name}</span>
+                      <span>{selectedModel.displayName}</span>
                     </div>
                   );
                 }
@@ -76,8 +76,8 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps) {
                   <CommandGroup heading={providerInfo.displayName}>
                     {providerModels.map((model) => (
                       <CommandItem
-                        key={model.modelName}
-                        value={model.modelName}
+                        key={model.id}
+                        value={model.id}
                         onSelect={(currentValue) => {
                           onChange(currentValue === value ? "" : currentValue);
                           setOpen(false);
@@ -85,15 +85,15 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps) {
                       >
                         <div className="flex items-center justify-between w-full">
                           <div className="flex flex-col">
-                            <div>{model.name}</div>
+                            <div>{model.displayName}</div>
                             <div className="font-mono text-xs text-muted-foreground">
-                              {model.modelName}
+                              {model.id}
                             </div>
                           </div>
                           <Check
                             className={cn(
                               "h-4 w-4",
-                              value === model.modelName ? "opacity-100" : "opacity-0",
+                              value === model.displayName ? "opacity-100" : "opacity-0",
                             )}
                           />
                         </div>

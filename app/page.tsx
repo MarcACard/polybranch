@@ -1,22 +1,17 @@
 "use client";
 
-import { ReactFlowProvider } from "@xyflow/react";
-import {
-  ReactFlow,
-  Background,
-  Controls,
-  type Edge,
-  type NodeChange,
-  type EdgeChange,
-} from "@xyflow/react";
+import { ReactFlowProvider, ReactFlow, Background, Controls } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
 import { useChatTree } from "@/hooks/use-chat-tree";
-import ApiKeyContext from "@/contexts/api-key-context";
+import { useApiKeys } from "@/contexts/api-key-context";
+import { sendLLMRequest } from "@/lib/ai-client";
 import { AppTopBar } from "@/components/app-top-bar";
 import { Chat } from "@/components/chat/chat";
 import { DebugToolbar } from "@/components/debug-toolbar";
 import { MessageNode } from "@/components/canvas/message-node";
+
+import { ProviderModel, ModelConfig } from "@/types/llm";
 
 const nodeTypes = { message: MessageNode };
 
@@ -29,31 +24,87 @@ export default function Home() {
     getSelectedNodes,
     addMessage,
     addTestMessage,
+    addSystemMessage,
     deleteAll,
   } = useChatTree();
+  const { getApiKey } = useApiKeys();
+
+  const onChatSend = async (
+    parentId: string,
+    message: string,
+    providerModel: ProviderModel,
+    parameters: ModelConfig,
+  ) => {
+    const apiKey = getApiKey(providerModel.provider);
+    if (!apiKey) {
+      throw new Error("Missing API Key");
+    }
+
+    // Add User Message to ReactFlow
+    const userMsgId = addMessage(
+      {
+        message: {
+          role: "user",
+          content: message,
+        },
+        timestamp: Date.now(),
+      },
+      parentId,
+    );
+
+    // Make Call to LLM
+    const res = await sendLLMRequest({
+      providerModel,
+      // TODO: Construct Context Chain
+      messages: [
+        {
+          role: "user",
+          content: message,
+        },
+      ],
+      config: parameters,
+      apiKey: apiKey.key,
+    });
+
+    // Add Response to ReactFlow
+    addMessage(
+      {
+        message: {
+          role: "assistant",
+          content: res.content.content, //TODO: FIx
+        },
+        provider: res.provider,
+        providerModel,
+        timestamp: res.timestamp,
+      },
+      userMsgId,
+    );
+  };
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
-      <ApiKeyContext>
+      <main className="w-full h-full">
         <ReactFlowProvider>
-          <main className="w-full h-full">
-            <AppTopBar />
-            <DebugToolbar addTestMessage={addTestMessage} deleteAll={deleteAll} />
-            <Chat addMessage={addMessage} />
-            <ReactFlow
-              nodeTypes={nodeTypes}
-              nodes={nodes}
-              edges={edges}
-              onNodesChange={handleNodeChanges}
-              onEdgesChange={handleEdgeChanges}
-              minZoom={0.001}
-            >
-              <Background />
-              <Controls />
-            </ReactFlow>
-          </main>
+          <AppTopBar />
+          <DebugToolbar
+            addTestMessage={addTestMessage}
+            addSystemMessage={addSystemMessage}
+            deleteAll={deleteAll}
+          />
+          <Chat onChatSend={onChatSend} getSelectedNodes={getSelectedNodes} />
+          <ReactFlow
+            nodeTypes={nodeTypes}
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={handleNodeChanges}
+            onEdgesChange={handleEdgeChanges}
+            minZoom={0.001}
+          >
+            <Background />
+            <Controls />
+          </ReactFlow>
         </ReactFlowProvider>
-      </ApiKeyContext>
+      </main>
     </div>
   );
 }
