@@ -3,11 +3,14 @@ import { useCallback } from "react";
 import { useApiKeys } from "@/contexts/api-key-context";
 
 import { PROVIDER_MODELS } from "@/constants/models";
-import { LLMProvider } from "@/types/llm";
+import { LLMProvider, LLMProviders } from "@/types/llm";
 
 export const useProviderModels = () => {
   const { hasApiKey } = useApiKeys();
 
+  /**
+   * Get ALL available models supported by PolyBranch.
+   */
   const availableModels = PROVIDER_MODELS;
 
   /**
@@ -41,8 +44,16 @@ export const useProviderModels = () => {
     [hasApiKey],
   );
 
+  /**
+   * Returns a list of Providers that are available for use (have an API Key set)
+   */
+  const getAvailableProviders = useCallback(() => {
+    return LLMProviders.filter((provider) => hasApiKey(provider));
+  }, [hasApiKey]);
+
   return {
     availableModels,
+    getAvailableProviders,
     getModelsForProvider,
     getModelById,
     getActiveModels,

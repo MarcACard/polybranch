@@ -2,12 +2,12 @@ import { LLMProvider, ProviderModel } from "@/types/llm";
 import { SiOpenai, SiGoogle, SiAnthropic, IconType } from "@icons-pack/react-simple-icons";
 import { SiXai } from "@/components/custom-icons";
 
-interface ProviderInfo {
+export type ProviderInfo = {
   displayName: string;
   description: string;
   icon: IconType;
   docsUrl: string;
-}
+};
 
 export const PROVIDERS: Record<LLMProvider, ProviderInfo> = {
   openai: {

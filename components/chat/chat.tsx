@@ -5,6 +5,7 @@ import React from "react";
 import { useToast } from "@/hooks/use-toast";
 import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
+import { DEFAULT_PARAMETERS } from "@/constants/parameters";
 
 import { ModelSelector } from "@/components/chat/model-selector";
 import { ModelConfiguration } from "@/components/chat/model-configuration";
@@ -28,8 +29,8 @@ interface ChatProps {
 export function Chat({ onChatSend, getSelectedNodes }: ChatProps) {
   const [message, setMessage] = React.useState("");
   const [isVisible, setIsVisible] = React.useState(true);
-  // TODO: adjust to use ProviderModel Type
-  const [selectedModel, setSelectedModel] = React.useState("");
+  const [selectedModel, setSelectedModel] = React.useState<ProviderModel | null>(null);
+  const [modelConfig, setModelConfig] = React.useState<Required<ModelConfig>>(DEFAULT_PARAMETERS);
 
   const { toast } = useToast();
 
@@ -42,20 +43,8 @@ export function Chat({ onChatSend, getSelectedNodes }: ChatProps) {
     if (!message.trim() || !selectedModel || !selectedNodeId) return;
 
     try {
-      // TODO: Replace hard-coded model with selected Model State
-      // TODO: Need a "Loading State", otherwise you just see a delay.
-      await onChatSend(
-        selectedNodeId,
-        message,
-        {
-          id: "gpt-4o-mini",
-          name: "GPT-4o mini",
-          modelName: "gpt-4o-mini",
-          provider: "openai",
-          maxTokens: 128000,
-        },
-        {},
-      );
+      // TODO: Need add "Loading State", otherwise you just see a delay.
+      await onChatSend(selectedNodeId, message, selectedModel, modelConfig);
       setMessage("");
     } catch (error) {
       logger.error("Error sending message", error);
@@ -108,9 +97,9 @@ export function Chat({ onChatSend, getSelectedNodes }: ChatProps) {
         <form onSubmit={handleSubmit}>
           <div className="px-3 py-3 border-b border-fborder/50 flex items-center justify-between gap-2">
             <div className="flex gap-2 items-center">
-              <ModelSelector value={selectedModel} onChange={setSelectedModel} />
+              <ModelSelector selectedModel={selectedModel} onModelChange={setSelectedModel} />
               {/* TODO: Tie in Model Configuration to Backend Call */}
-              <ModelConfiguration />
+              <ModelConfiguration value={modelConfig} onChange={setModelConfig} />
             </div>
             <div>
               <Button

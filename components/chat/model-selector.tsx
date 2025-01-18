@@ -5,7 +5,7 @@ import { useApiKeys } from "@/contexts/api-key-context";
 
 import { cn } from "@/lib/utils";
 import { PROVIDERS, PROVIDER_MODELS } from "@/constants/models";
-import { LLMProvider } from "@/types/llm";
+import { LLMProvider, ProviderModel } from "@/types/llm";
 
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -21,17 +21,23 @@ import {
 import { ChevronsUpDown, Check } from "lucide-react";
 
 interface ModelSelectorProps {
-  value: string;
-  onChange: (value: string) => void;
+  selectedModel: ProviderModel | null;
+  onModelChange: (model: ProviderModel | null) => void;
 }
 
-export function ModelSelector({ value, onChange }: ModelSelectorProps) {
-  const { getModelsForProvider } = useProviderModels();
-  const { hasApiKey } = useApiKeys();
+export function ModelSelector({ selectedModel, onModelChange }: ModelSelectorProps) {
+  const { getAvailableProviders, getModelsForProvider } = useProviderModels();
   const [open, setOpen] = React.useState(false);
 
-  const activeProviders = (Object.keys(PROVIDERS) as LLMProvider[]).filter((provider) =>
-    hasApiKey(provider),
+  const activeProviders = getAvailableProviders();
+
+  const modelDisplayLabel = selectedModel ? (
+    <div className="flex items-center gap-2">
+      {React.createElement(PROVIDERS[selectedModel.provider].icon)}
+      <span>{selectedModel.displayName}</span>
+    </div>
+  ) : (
+    "Select a Model"
   );
 
   return (
@@ -43,22 +49,7 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps) {
           aria-expanded={open}
           className="w-[200px] justify-between pl-2 pr-1"
         >
-          {value
-            ? (() => {
-                const selectedModel = PROVIDER_MODELS.find((model) => model.id === value);
-                if (selectedModel) {
-                  const providerInfo = PROVIDERS[selectedModel.provider];
-                  const Icon = providerInfo.icon;
-                  return (
-                    <div className="flex items-center gap-2">
-                      <Icon />
-                      <span>{selectedModel.displayName}</span>
-                    </div>
-                  );
-                }
-                return "Select a Model";
-              })()
-            : "Select a Model"}
+          {modelDisplayLabel}
           <ChevronsUpDown />
         </Button>
       </PopoverTrigger>
@@ -69,7 +60,7 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps) {
             <CommandEmpty>No model found.</CommandEmpty>
             {activeProviders.map((provider, i, arr) => {
               const providerInfo = PROVIDERS[provider];
-              const providerModels = getModelsForProvider(provider);
+              const providerModels = getModelsForProvider(provider) || [];
 
               return (
                 <React.Fragment key={provider}>
@@ -78,8 +69,8 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps) {
                       <CommandItem
                         key={model.id}
                         value={model.id}
-                        onSelect={(currentValue) => {
-                          onChange(currentValue === value ? "" : currentValue);
+                        onSelect={() => {
+                          onModelChange(model);
                           setOpen(false);
                         }}
                       >
@@ -93,7 +84,7 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps) {
                           <Check
                             className={cn(
                               "h-4 w-4",
-                              value === model.displayName ? "opacity-100" : "opacity-0",
+                              selectedModel?.id === model.id ? "opacity-100" : "opacity-0",
                             )}
                           />
                         </div>

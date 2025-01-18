@@ -17,7 +17,10 @@ export async function callOpenAI(
   // Call OpenAI
   const chatCompletion = await client.chat.completions.create({
     messages: messages,
-    model: providerModel.modelName,
+    model: providerModel.id,
+    top_p: config.topP,
+    max_completion_tokens: config.maxTokens,
+    temperature: config.temperature,
   });
 
   return {
