@@ -12,6 +12,7 @@ import { logger } from "@/lib/logger";
 import { storage } from "@/lib/local-storage";
 import { StorageKeys } from "@/constants/storage-keys";
 import { MessageNode, MessageNodeData } from "@/types/nodes";
+import { Message } from "@/types/llm";
 
 export const useChatTree = () => {
   // CORE STATE, Init from Local Storage
@@ -109,6 +110,34 @@ export const useChatTree = () => {
   };
 
   /**
+   * Retreive a context chain from the hierarchy of nodes selected on the canvas.
+   * @param parentId
+   */
+  const getContextChain = (parentId: string, userMsg: Message): Message[] => {
+    let currentNodeId = parentId;
+    let chain: Message[] = [userMsg];
+
+    while (currentNodeId) {
+      // Find the edge where current id is the target
+      const currentEdge = edges.find((e) => e.target === currentNodeId);
+
+      if (!currentEdge) break;
+
+      // Use the edge source to find the preceeding node.
+      const nextNode = nodes.find((n) => n.id === currentEdge.source);
+
+      if (!nextNode) break;
+
+      // Prepend the node data to the chain.
+      chain.unshift(nextNode.data.message);
+      // Setup currentNodeId for the next iteration.
+      currentNodeId = nextNode.id;
+    }
+
+    return chain;
+  };
+
+  /**
    * Adds a test user node to ReactFlow. Used w/ Debug Toolbar
    */
   const addTestMessage = () => {
@@ -155,6 +184,7 @@ export const useChatTree = () => {
     // Helpers
     getSelectedNodes,
     addMessage,
+    getContextChain,
     // Debug Helpers
     addTestMessage,
     addSystemMessage,

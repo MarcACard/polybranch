@@ -22,6 +22,7 @@ export default function Home() {
     handleNodeChanges,
     handleEdgeChanges,
     getSelectedNodes,
+    getContextChain,
     addMessage,
     addTestMessage,
     addSystemMessage,
@@ -29,6 +30,7 @@ export default function Home() {
   } = useChatTree();
   const { getApiKey } = useApiKeys();
 
+  // TODO: Refactor
   const onChatSend = async (
     parentId: string,
     message: string,
@@ -52,16 +54,12 @@ export default function Home() {
       parentId,
     );
 
+    const contextChain = getContextChain(parentId, { role: "user", content: message });
+
     // Make Call to LLM
     const res = await sendLLMRequest({
       providerModel,
-      // TODO: Construct Context Chain
-      messages: [
-        {
-          role: "user",
-          content: message,
-        },
-      ],
+      messages: contextChain,
       config: parameters,
       apiKey: apiKey.key,
     });
