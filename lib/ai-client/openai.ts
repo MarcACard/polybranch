@@ -25,7 +25,7 @@ export async function callOpenAI(
 
   return {
     timestamp: chatCompletion.created,
-    content: chatCompletion.choices[0].message,
+    content: chatCompletion.choices[0].message.content,
     provider: "openai",
     model: chatCompletion.model,
     tokenCount: chatCompletion.usage?.completion_tokens,

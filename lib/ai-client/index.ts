@@ -16,10 +16,12 @@ export async function callProvider(params: LLMRequest) {
   switch (providerModel.provider) {
     case "openai":
       return callOpenAI(providerModel, messages, config, apiKey);
-    case "anthropic":
-      return;
-    case "xai":
-      return;
+    // case "anthropic":
+    //   return;
+    // case "xai":
+    //   return;
+    // case "google":
+    //   return;
     default:
       throw new Error(`Unsupported Provider: ${providerModel.provider}`);
   }

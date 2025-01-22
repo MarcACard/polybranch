@@ -71,11 +71,12 @@ export default function Home() {
       {
         message: {
           role: "assistant",
-          content: res.content.content, //TODO: FIx
+          content: res.content,
         },
         provider: res.provider,
         providerModel,
         timestamp: res.timestamp,
+        tokenCount: res.tokenCount,
       },
       userMsgId,
     );
