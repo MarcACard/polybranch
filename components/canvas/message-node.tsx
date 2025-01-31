@@ -49,7 +49,7 @@ export function MessageNode({ id, data, selected }: MessageNodeProps) {
     >
       {/* Top Handle */}
       {/* TODO: Conditionally Render Top Handle if it has a parent edge - e.g. the node is a target of an edge */}
-      <Handle type="target" position={Position.Top} className="!w-2 !h-2" />
+      <Handle type="target" position={Position.Top} className="!w-3 !h-3" />
       <div className="p-4 space-y-2">
         <div className="flex items-center justify-between ">
           {message.role === "user" && (
@@ -84,8 +84,12 @@ export function MessageNode({ id, data, selected }: MessageNodeProps) {
             <Separator />
             <div className="flex justify-between text-xs text-muted-foregorund">
               <div>
-                <span className="font-semibold">Tokens: </span>
-                {data?.tokenCount}
+                {data?.tokenCount && (
+                  <>
+                    <span className="font-semibold">Tokens: </span>
+                    {data?.tokenCount}
+                  </>
+                )}
               </div>
               <div>{formattedTime}</div>
             </div>
@@ -93,7 +97,7 @@ export function MessageNode({ id, data, selected }: MessageNodeProps) {
         )}
       </div>
       {/* Bottom Handle */}
-      <Handle type="source" position={Position.Bottom} className="!w-2 !h-2" />
+      <Handle type="source" position={Position.Bottom} className="!w-3 !h-3" />
     </div>
   );
 }
