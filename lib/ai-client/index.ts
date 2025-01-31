@@ -1,4 +1,6 @@
-import { callOpenAI } from "@/lib/ai-client/openai";
+import { callOpenAI } from "./openai";
+import { callXAI } from "./xai";
+import { callAnthropic } from "./anthropic";
 
 import { ProviderModel, ModelConfig, Messages } from "@/types/llm";
 
@@ -16,12 +18,12 @@ export async function callProvider(params: LLMRequest) {
   switch (providerModel.provider) {
     case "openai":
       return callOpenAI(providerModel, messages, config, apiKey);
-    // case "anthropic":
-    //   return;
-    // case "xai":
-    //   return;
+    case "anthropic":
+      return callAnthropic(providerModel, messages, config, apiKey);
+    case "xai":
+      return callXAI(providerModel, messages, config, apiKey);
     // case "google":
-    //   return;
+    //   return callGoogle(providerModel, messages, config, apiKey);
     default:
       throw new Error(`Unsupported Provider: ${providerModel.provider}`);
   }
