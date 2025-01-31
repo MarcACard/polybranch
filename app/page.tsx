@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback } from "react";
 import { ReactFlowProvider, ReactFlow, Background, Controls } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
@@ -21,6 +22,7 @@ export default function Home() {
     edges,
     handleNodeChanges,
     handleEdgeChanges,
+    handleConnection,
     getSelectedNodes,
     getContextChain,
     addMessage,
@@ -97,6 +99,7 @@ export default function Home() {
             edges={edges}
             onNodesChange={handleNodeChanges}
             onEdgesChange={handleEdgeChanges}
+            onConnect={handleConnection}
             minZoom={0.001}
           >
             <Background />

@@ -6,6 +6,7 @@ import {
   type NodeChange,
   type EdgeChange,
   type XYPosition,
+  type Connection,
 } from "@xyflow/react";
 
 import { logger } from "@/lib/logger";
@@ -48,6 +49,21 @@ export const useChatTree = () => {
     storage.set(StorageKeys.CANVAS_NODES, nodes);
     storage.set(StorageKeys.CANVAS_EDGES, edges);
   }, [nodes, edges]);
+
+  // TODO: Add Validation to enforce the rooted tree structure
+  const handleConnection = useCallback(
+    ({ source, target }: Connection) => {
+      const newEdge = {
+        id: `e-${source}-${target}`,
+        type: "smoothstep",
+        source,
+        target,
+      };
+
+      setEdges((prev) => [...prev, newEdge]);
+    },
+    [setEdges],
+  );
 
   // === Utilities ====
   /**
@@ -99,7 +115,8 @@ export const useChatTree = () => {
     // Create & Add an edge if a parent Id exists.
     if (parentId !== undefined) {
       const edge: Edge = {
-        id: `e-${id}`,
+        id: `e-${parentId}-${id}`,
+        type: "smoothstep",
         source: parentId,
         target: id,
       };
@@ -181,6 +198,7 @@ export const useChatTree = () => {
     // Reactflow Callbacks
     handleNodeChanges,
     handleEdgeChanges,
+    handleConnection,
     // Helpers
     getSelectedNodes,
     addMessage,
