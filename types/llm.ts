@@ -14,6 +14,7 @@ export type ProviderModel = {
   id: string;
   displayName: string;
   provider: LLMProvider;
+  price?: string;
   maxTokens?: number;
   description?: string;
 };

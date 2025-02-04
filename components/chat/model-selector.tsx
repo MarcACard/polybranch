@@ -18,11 +18,27 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { ChevronsUpDown, Check } from "lucide-react";
 
 interface ModelSelectorProps {
   selectedModel: ProviderModel | null;
   onModelChange: (model: ProviderModel | null) => void;
+}
+
+function ModelInfoCard({ displayName, id, price, description }: ProviderModel) {
+  return (
+    <HoverCardContent side="right">
+      <div className="flex justify-between mb-2">
+        <div>
+          <h3 className="font-medium">{displayName}</h3>
+          <div className="text-xs text-muted-foreground font-mono">{id}</div>
+        </div>
+        <div className="text-muted-foreground text-xs">{price}</div>
+      </div>
+      <div className="text-xs text-muted-foreground ">{description}</div>
+    </HoverCardContent>
+  );
 }
 
 export function ModelSelector({ selectedModel, onModelChange }: ModelSelectorProps) {
@@ -66,29 +82,34 @@ export function ModelSelector({ selectedModel, onModelChange }: ModelSelectorPro
                 <React.Fragment key={provider}>
                   <CommandGroup heading={providerInfo.displayName}>
                     {providerModels.map((model) => (
-                      <CommandItem
-                        key={model.id}
-                        value={model.id}
-                        onSelect={() => {
-                          onModelChange(model);
-                          setOpen(false);
-                        }}
-                      >
-                        <div className="flex items-center justify-between w-full">
-                          <div className="flex flex-col">
-                            <div>{model.displayName}</div>
-                            <div className="font-mono text-xs text-muted-foreground">
-                              {model.id}
+                      <HoverCard>
+                        <HoverCardTrigger asChild>
+                          <CommandItem
+                            key={model.id}
+                            value={model.id}
+                            onSelect={() => {
+                              onModelChange(model);
+                              setOpen(false);
+                            }}
+                          >
+                            <div className="flex items-center justify-between w-full">
+                              <div className="flex flex-col">
+                                <div>{model.displayName}</div>
+                                <div className="font-mono text-xs text-muted-foreground">
+                                  {model.id}
+                                </div>
+                              </div>
+                              <Check
+                                className={cn(
+                                  "h-4 w-4",
+                                  selectedModel?.id === model.id ? "opacity-100" : "opacity-0",
+                                )}
+                              />
                             </div>
-                          </div>
-                          <Check
-                            className={cn(
-                              "h-4 w-4",
-                              selectedModel?.id === model.id ? "opacity-100" : "opacity-0",
-                            )}
-                          />
-                        </div>
-                      </CommandItem>
+                          </CommandItem>
+                        </HoverCardTrigger>
+                        <ModelInfoCard {...model} />
+                      </HoverCard>
                     ))}
                   </CommandGroup>
                   {i !== arr.length - 1 && arr.length > 1 && <CommandSeparator />}

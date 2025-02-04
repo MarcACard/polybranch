@@ -43,6 +43,7 @@ export const PROVIDER_MODELS: ProviderModel[] = [
     provider: "openai",
     maxTokens: 128000,
     description: "Our versatile, high-intelligence flagship model",
+    price: "$$$",
   },
   {
     id: "gpt-4o-mini",
@@ -50,6 +51,7 @@ export const PROVIDER_MODELS: ProviderModel[] = [
     provider: "openai",
     maxTokens: 128000,
     description: "Our fast, affordable small model for focused tasks",
+    price: "$",
   },
   {
     id: "gpt-4-turbo",
@@ -57,6 +59,7 @@ export const PROVIDER_MODELS: ProviderModel[] = [
     provider: "openai",
     maxTokens: 128000,
     description: "The previous set of high-intelligence models",
+    price: "$$$",
   },
   {
     id: "gpt-3.5-turbo",
@@ -64,6 +67,7 @@ export const PROVIDER_MODELS: ProviderModel[] = [
     provider: "openai",
     maxTokens: 16385,
     description: "A fast model for simple tasks, superceded by GPT-4o-mini",
+    price: "$",
   },
   {
     id: "claude-3-5-sonnet-latest",
