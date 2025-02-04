@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Panel } from "@xyflow/react";
 
 import { ProviderKeyManager } from "@/components/api-key-manager";
 import { Button } from "@/components/ui/button";
@@ -29,9 +30,9 @@ const ExternalLinkMenuItem = ({ icon: Icon, children, href }: ExternalLinkMenuIt
   </DropdownMenuItem>
 );
 
-export function AppTopBar() {
+export function AppMainMenu() {
   return (
-    <div className="fixed top-0 left-0 right-0 p-4 pointer-events-none z-50">
+    <Panel position="top-left">
       <div className="pointer-events-auto inline-block drop-shadow-md">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -74,6 +75,6 @@ export function AppTopBar() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-    </div>
+    </Panel>
   );
 }

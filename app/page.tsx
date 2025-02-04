@@ -7,7 +7,7 @@ import "@xyflow/react/dist/style.css";
 import { useChatTree } from "@/hooks/use-chat-tree";
 import { useApiKeys } from "@/contexts/api-key-context";
 import { sendLLMRequest } from "@/lib/ai-client";
-import { AppTopBar } from "@/components/app-top-bar";
+import { AppMainMenu } from "@/components/app-main-menu";
 import { Chat } from "@/components/chat/chat";
 import { DebugToolbar } from "@/components/debug-toolbar";
 import { MessageNode } from "@/components/canvas/message-node";
@@ -86,7 +86,6 @@ export default function Home() {
     <div className="relative w-full h-screen overflow-hidden">
       <main className="w-full h-full">
         <ReactFlowProvider>
-          <AppTopBar />
           <DebugToolbar
             addTestMessage={addTestMessage}
             addSystemMessage={addSystemMessage}
@@ -102,6 +101,7 @@ export default function Home() {
             onConnect={handleConnection}
             minZoom={0.001}
           >
+            <AppMainMenu />
             <Background />
             <Controls />
           </ReactFlow>
