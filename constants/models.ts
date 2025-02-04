@@ -14,25 +14,25 @@ export const PROVIDERS: Record<LLMProvider, ProviderInfo> = {
     displayName: "OpenAI",
     description: "",
     icon: SiOpenai,
-    docsUrl: "",
+    docsUrl: "https://platform.openai.com/docs/api-reference/introduction",
   },
   anthropic: {
     displayName: "Anthropic",
     description: "",
     icon: SiAnthropic,
-    docsUrl: "",
+    docsUrl: "https://docs.anthropic.com/en/api/getting-started",
   },
   google: {
     displayName: "Google",
     description: "",
     icon: SiGoogle,
-    docsUrl: "",
+    docsUrl: "https://ai.google.dev/gemini-api/docs",
   },
   xai: {
     displayName: "xAI",
     description: "",
     icon: SiXai,
-    docsUrl: "",
+    docsUrl: "https://docs.x.ai/docs/overview",
   },
 };
 
