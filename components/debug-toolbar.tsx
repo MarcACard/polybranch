@@ -6,11 +6,9 @@ import { FilePlus, Trash2, FileCog } from "lucide-react";
 export function DebugToolbar({
   addTestMessage,
   addSystemMessage,
-  deleteAll,
 }: {
   addTestMessage: () => void;
   addSystemMessage: () => void;
-  deleteAll: () => void;
 }) {
   return (
     <div className="fixed bottom-1/2 right-0 mr-4 pointer-events-none z-50">
@@ -39,16 +37,6 @@ export function DebugToolbar({
             </TooltipTrigger>
             <TooltipContent side="left">
               <p>Add System Message</p>
-            </TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button onClick={deleteAll} size="icon" variant="ghost" className="rounded-full">
-                <Trash2 />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="left">
-              <p>Delete All</p>
             </TooltipContent>
           </Tooltip>
         </div>

@@ -186,10 +186,10 @@ export const useChatTree = () => {
   /**
    * Delete all Edges and Nodes. Used w/ Debug Toolbar
    */
-  const deleteAll = () => {
+  const handleCanvasReset = useCallback(() => {
     setNodes(() => []);
     setEdges(() => []);
-  };
+  }, []);
 
   return {
     // State
@@ -199,6 +199,7 @@ export const useChatTree = () => {
     handleNodeChanges,
     handleEdgeChanges,
     handleConnection,
+    handleCanvasReset,
     // Helpers
     getSelectedNodes,
     addMessage,
@@ -206,6 +207,5 @@ export const useChatTree = () => {
     // Debug Helpers
     addTestMessage,
     addSystemMessage,
-    deleteAll,
   };
 };

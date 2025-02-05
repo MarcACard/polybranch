@@ -29,7 +29,7 @@ export default function Home() {
     addMessage,
     addTestMessage,
     addSystemMessage,
-    deleteAll,
+    handleCanvasReset,
   } = useChatTree();
   const { getApiKey } = useApiKeys();
 
@@ -87,11 +87,7 @@ export default function Home() {
     <div className="relative w-full h-screen overflow-hidden">
       <main className="w-full h-full">
         <ReactFlowProvider>
-          <DebugToolbar
-            addTestMessage={addTestMessage}
-            addSystemMessage={addSystemMessage}
-            deleteAll={deleteAll}
-          />
+          <DebugToolbar addTestMessage={addTestMessage} addSystemMessage={addSystemMessage} />
           <Chat onChatSend={onChatSend} getSelectedNodes={getSelectedNodes} />
           <ReactFlow
             nodeTypes={nodeTypes}
@@ -102,7 +98,7 @@ export default function Home() {
             onConnect={handleConnection}
             minZoom={0.001}
           >
-            <AppMainMenu />
+            <AppMainMenu onCanvasReset={handleCanvasReset} />
             <AppToolbar />
             <Background />
             <Controls />
