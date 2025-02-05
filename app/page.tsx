@@ -9,6 +9,7 @@ import { useApiKeys } from "@/contexts/api-key-context";
 import { sendLLMRequest } from "@/lib/ai-client";
 import { AppMainMenu } from "@/components/app-main-menu";
 import { Chat } from "@/components/chat/chat";
+import { AppToolbar } from "@/components/app-toolbar";
 import { DebugToolbar } from "@/components/debug-toolbar";
 import { MessageNode } from "@/components/canvas/message-node";
 
@@ -102,6 +103,7 @@ export default function Home() {
             minZoom={0.001}
           >
             <AppMainMenu />
+            <AppToolbar />
             <Background />
             <Controls />
           </ReactFlow>
