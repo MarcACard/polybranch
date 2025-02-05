@@ -13,7 +13,7 @@ import {
 import { SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { SheetItem } from "@/components/ui/sheet-item";
 import { SiGithub, IconType } from "@icons-pack/react-simple-icons";
-import { Menu, KeyRound } from "lucide-react";
+import { Trash2, ImageDown, Menu, KeyRound, FolderDown } from "lucide-react";
 
 interface ExternalLinkMenuItemProps {
   icon: IconType;
@@ -36,7 +36,7 @@ export function AppMainMenu() {
       <div className="pointer-events-auto inline-block drop-shadow-md">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="default" size="icon" className="">
+            <Button variant="outline" size="icon">
               <Menu />
             </Button>
           </DropdownMenuTrigger>
@@ -66,6 +66,21 @@ export function AppMainMenu() {
                 <ProviderKeyManager />
               </div>
             </SheetItem>
+
+            <DropdownMenuItem>
+              <ImageDown />
+              <span>Export Image</span>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem>
+              <FolderDown />
+              <span>Export Data</span>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem>
+              <Trash2 />
+              <span>Clear Canvas</span>
+            </DropdownMenuItem>
 
             <DropdownMenuSeparator />
 
