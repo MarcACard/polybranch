@@ -2,16 +2,17 @@
 
 import { useState } from "react";
 
-import { useApiKeys } from "@/contexts/api-key-context";
-import { LLMProvider } from "@/types/llm";
 import { PROVIDERS } from "@/constants/models";
+import { useApiKeys } from "@/contexts/api-key-context";
+import { Eye, EyeOff, Save, Trash2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { LLMProvider } from "@/types/llm";
+
 import { useToast } from "@/hooks/use-toast";
 
-import { Eye, EyeOff, Save, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export const ProviderKeyManager = () => {
   const [showKeys, setShowKeys] = useState<Record<string, boolean>>({});
