@@ -1,6 +1,7 @@
+import { FileCog, FilePlus } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { FilePlus, Trash2, FileCog } from "lucide-react";
 
 // TODO: Conditionally Render? - Pass State from Layer up -> View / Hide
 export function DebugToolbar({

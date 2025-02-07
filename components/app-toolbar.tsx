@@ -1,9 +1,9 @@
 import { Panel } from "@xyflow/react";
+import { Group, LockKeyhole, MonitorCog, SquarePen } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
-import { MonitorCog, SquarePen, Group, LockKeyhole } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function AppToolbar() {
   return (

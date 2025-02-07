@@ -1,14 +1,15 @@
 import React from "react";
 
-import { DEFAULT_PARAMETERS, PARAMETER_LIMITS, PARAMETERS_DISPLAY } from "@/constants/parameters";
+import { DEFAULT_PARAMETERS, PARAMETERS_DISPLAY, PARAMETER_LIMITS } from "@/constants/parameters";
+import { Settings2 } from "lucide-react";
+
+import { LLM_PARAMETER_KEYS, ModelConfig } from "@/types/llm";
 
 import { Button } from "@/components/ui/button";
-import { Settings2 } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Slider } from "@/components/ui/slider";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Label } from "@/components/ui/label";
-import { ModelConfig, LLMParameterKey, LLM_PARAMETER_KEYS } from "@/types/llm";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Slider } from "@/components/ui/slider";
 
 interface ModelConfigurationProps {
   value: Required<ModelConfig>;

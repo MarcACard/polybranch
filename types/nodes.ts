@@ -1,5 +1,6 @@
 import { Node } from "@xyflow/react";
-import { LLMProvider, ProviderModel, Message, ModelConfig } from "@/types/llm";
+
+import { LLMProvider, Message, ModelConfig, ProviderModel } from "@/types/llm";
 
 export type MessageNodeData = {
   message: Message;

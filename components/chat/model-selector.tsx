@@ -1,14 +1,15 @@
 import React from "react";
 
-import { useProviderModels } from "@/hooks/use-provider-models";
-import { useApiKeys } from "@/contexts/api-key-context";
+import { PROVIDERS } from "@/constants/models";
+import { Check, ChevronsUpDown } from "lucide-react";
+
+import { ProviderModel } from "@/types/llm";
 
 import { cn } from "@/lib/utils";
-import { PROVIDERS, PROVIDER_MODELS } from "@/constants/models";
-import { LLMProvider, ProviderModel } from "@/types/llm";
+
+import { useProviderModels } from "@/hooks/use-provider-models";
 
 import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Command,
   CommandEmpty,
@@ -19,7 +20,7 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import { ChevronsUpDown, Check } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface ModelSelectorProps {
   selectedModel: ProviderModel | null;

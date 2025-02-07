@@ -1,19 +1,17 @@
-import { Handle, Position, NodeProps } from "@xyflow/react";
-import { MessageNodeData } from "@/types/nodes";
+import { Ellipsis, Pencil, RefreshCcw, Trash2 } from "lucide-react";
 
-import { Ellipsis, Trash2, Pencil, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
   DropdownMenuPortal,
+  DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 interface MessageNodeMenuProps {

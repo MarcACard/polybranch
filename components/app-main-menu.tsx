@@ -1,7 +1,20 @@
 import type { ReactNode } from "react";
-import { Panel } from "@xyflow/react";
 
-import { ProviderKeyManager } from "@/components/api-key-manager";
+import { IconType, SiGithub, SiX } from "@icons-pack/react-simple-icons";
+import { Panel } from "@xyflow/react";
+import { FolderDown, ImageDown, KeyRound, Menu, Trash2 } from "lucide-react";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,25 +25,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Sheet,
-  SheetTrigger,
+  SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetDescription,
-  SheetContent,
+  SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  AlertDialog,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogTrigger,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogCancel,
-  AlertDialogAction,
-  AlertDialogFooter,
-} from "@/components/ui/alert-dialog";
-import { SiX, SiGithub, IconType } from "@icons-pack/react-simple-icons";
-import { Trash2, ImageDown, Menu, KeyRound, FolderDown } from "lucide-react";
+
+import { ProviderKeyManager } from "@/components/api-key-manager";
 
 interface ExternalLinkMenuItemProps {
   icon: IconType;

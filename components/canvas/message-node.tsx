@@ -1,12 +1,16 @@
 "use client";
 
-import { Handle, Position, NodeProps } from "@xyflow/react";
-import { MessageNodeData } from "@/types/nodes";
-import { Separator } from "@/components/ui/separator";
-import { MessageNodeMenu } from "@/components/canvas/message-node-menu";
-import { User, SquareChevronRight } from "lucide-react";
 import { PROVIDERS } from "@/constants/models";
+import { Handle, NodeProps, Position } from "@xyflow/react";
+import { SquareChevronRight, User } from "lucide-react";
+
+import { MessageNodeData } from "@/types/nodes";
+
 import { cn } from "@/lib/utils";
+
+import { Separator } from "@/components/ui/separator";
+
+import { MessageNodeMenu } from "@/components/canvas/message-node-menu";
 
 interface MessageNodeProps extends NodeProps {
   data: MessageNodeData;

@@ -1,5 +1,7 @@
+import { IconType, SiAnthropic, SiGoogle, SiOpenai } from "@icons-pack/react-simple-icons";
+
 import { LLMProvider, ProviderModel } from "@/types/llm";
-import { SiOpenai, SiGoogle, SiAnthropic, IconType } from "@icons-pack/react-simple-icons";
+
 import { SiXai } from "@/components/custom-icons";
 
 export type ProviderInfo = {

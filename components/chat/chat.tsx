@@ -2,19 +2,22 @@
 
 import React from "react";
 
-import { useToast } from "@/hooks/use-toast";
-import { logger } from "@/lib/logger";
-import { cn } from "@/lib/utils";
 import { DEFAULT_PARAMETERS } from "@/constants/parameters";
-
-import { ModelSelector } from "@/components/chat/model-selector";
-import { ModelConfiguration } from "@/components/chat/model-configuration";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp, MoveUp } from "lucide-react";
 
-import { ProviderModel, ModelConfig } from "@/types/llm";
+import { ModelConfig, ProviderModel } from "@/types/llm";
 import { MessageNode } from "@/types/nodes";
+
+import { logger } from "@/lib/logger";
+import { cn } from "@/lib/utils";
+
+import { useToast } from "@/hooks/use-toast";
+
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+
+import { ModelConfiguration } from "@/components/chat/model-configuration";
+import { ModelSelector } from "@/components/chat/model-selector";
 
 interface ChatProps {
   onChatSend: (

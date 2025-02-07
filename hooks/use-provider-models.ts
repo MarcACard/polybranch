@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 
+import { PROVIDER_MODELS } from "@/constants/models";
 import { useApiKeys } from "@/contexts/api-key-context";
 
-import { PROVIDER_MODELS } from "@/constants/models";
 import { LLMProvider, LLMProviders } from "@/types/llm";
 
 export const useProviderModels = () => {
